@@ -9,7 +9,10 @@ TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
 async def main(message):
+    try:
         text = ''
+        with open(f'{OSU_SKIN_PATH}1.osk', 'x'):
+            pass
         ## for general db
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
@@ -36,5 +39,6 @@ async def main(message):
             cursor.execute(query)
             cursor.execute(query1)
             text = text + '\n2.skins initialization succesful'
-        file = open(f'{OSU_SKIN_PATH}1.osk', 'x')
         await bot.reply_to(message, text)
+    except Exception as e:
+        print(e)
