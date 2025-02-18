@@ -11,8 +11,6 @@ bot = AsyncTeleBot(TOKEN)
 async def main(message):
     try:
         text = ''
-        with open(f'{OSU_SKIN_PATH}1.osk', 'x'):
-            pass
         ## for general db
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
