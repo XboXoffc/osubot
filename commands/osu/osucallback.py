@@ -18,7 +18,7 @@ osu_api = osuapi.Osu(OSU_ID, OSU_SECRET, X_API_VERSION)
 async def main(call):
     datasplit = call.data.split('@')
     if datasplit[0] in ['osu_skin_view']:
-        userid = call.message.caption.split('\n')[0][1:]
+        skinid = datasplit[1]
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
             query = """ SELECT osu_users.id, osu_skins.tg_id, osu_skins.file_name 
@@ -26,12 +26,14 @@ async def main(call):
                         ON osu_skins.tg_id = osu_users.tg_id """
             cursor.execute(query)
             for user_skin in cursor.fetchall():
-                if str(user_skin[0]) == userid:
+                if str(user_skin[0]) == skinid:
+                    tempmsg = await bot.reply_to(call.message, 'Skin is uploading...')
                     with open(f'{OSU_SKIN_PATH}{user_skin[2]}', 'rb') as file:
-                        await bot.send_document(call.message.chat.id, file, call.message.id, f'''@{call.from_user.username},\nIt's his skin''')
-                    msg_sent = True
+                        await bot.send_document(call.message.chat.id, file, call.message.id, f'''@{call.from_user.username}, It's his skin''')
+                        await bot.delete_message(tempmsg.chat.id, tempmsg.id)
+                    issend = True
                     break
-            if 'msg_sent' not in locals():
+            if issend not in locals() and issend == False:
                 await bot.reply_to(call.message, "ERROR: he didn't added skin")
                 
     elif datasplit[0] in ['osu_recent_prev', 'osu_recent_next']:

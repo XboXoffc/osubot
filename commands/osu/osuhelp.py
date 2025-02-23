@@ -7,21 +7,16 @@ bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit):
     text = """
-*message format:* <prefix> <command> <option> <suffix>
 *prefixes:* /osu, osu, o, su
-*commands:* help, nick(set), profile(p), avatar
-
+*commands:* help, nick(set), profile(p), avatar, recent(r), ii, skin(sk)
 < > - required
 ( ) - optional
 
 `su nick <username> (mode)` - set username
-options: any username*(required)* and any mode
-
-`su profile (username)` - check profile
-options: you can write any other username
-suffixes: osu(std), mania(m), taiko(t), fruits(c, ctb, catch)
-
+`su profile (username) (mode)` - check profile
 `su avatar <username>` - returns avatar
-options: any username*(required)*
+`su r (username) (-offset *num*)` - returns your recent play
+`su sk` - add your skin in database
+`su ii` - checks your improvement indicator
         """
     await bot.reply_to(message, text, parse_mode='MARKDOWN')

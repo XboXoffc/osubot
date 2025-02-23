@@ -59,15 +59,16 @@ async def main(message, msgsplit, all_modes, offset = '0', isinline=False, delms
     elif osumode is ('c' or 'ctb' or 'catch'):
         osumode = 'fruits'
 
-    for i in ['-offset', '-off']:
-        if i in msgsplit:
-            index = msgsplit.index(i) + 1
-            offset = msgsplit[index] if msgsplit[index] != '$empty$' else '0'
-    try:
-        if int(offset) <= 0:
+    if not isinline:
+        for i in ['-offset', '-off']:
+            if i in msgsplit:
+                index = msgsplit.index(i) + 1
+                offset = msgsplit[index] if msgsplit[index] != '$empty$' else '0'
+        try:
+            if int(offset) <= 0:
+                offset = '0'
+        except:
             offset = '0'
-    except:
-        offset = '0'
 
     
     if osuid != None:
@@ -81,7 +82,13 @@ async def main(message, msgsplit, all_modes, offset = '0', isinline=False, delms
         text = 'ERROR: set nick in bot with `su nick`'
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
 
+    markup = types.InlineKeyboardMarkup()
+    buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}')
+    buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}')
     if recent_res != None:
+        if isinline:
+            await bot.delete_message(delchatid, delmsgid)
+
         text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
         
         text += f'''[{recent_res['beatmapset']['artist']} - {recent_res['beatmapset']['title']}]({recent_res['beatmap']['url']}) '''
@@ -121,15 +128,14 @@ async def main(message, msgsplit, all_modes, offset = '0', isinline=False, delms
 
         text += f'''\n'''
         text += f'''Score url: https://osu.ppy.sh/scores/{recent_res['id']}\n'''
-        markup = types.InlineKeyboardMarkup()
-        buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}')
-        buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}')
+        
         markup.add(buttonNext, buttonPrev)
-        if isinline:
-            await bot.delete_message(delchatid, delmsgid)
         await bot.send_photo(message.chat.id, beatmap_res['beatmapset']['covers']['card@2x'], text, reply_to_message_id=message.id, parse_mode='MARKDOWN', reply_markup=markup)
     elif recent_res == None and osuid != None:
-        text = 'ERROR: no recent scores for 24 hours'
-        await bot.reply_to(message, text)
-
-#TODO сделать кнопки перемещения оффсета
+        text = f'ERROR: no recent scores for 24 hours\noffset = {offset}'
+        if isinline:
+            markup.add(buttonNext)
+            await bot.delete_message(delchatid, delmsgid)
+            await bot.reply_to(message, text, reply_markup=markup)
+        else:
+            await bot.reply_to(message, text)

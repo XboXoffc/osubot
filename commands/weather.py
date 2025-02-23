@@ -4,6 +4,10 @@ import requests
 import config
 from commands import other
 
+API_KEY = config.WHEATHER_API
+TOKEN = config.TG_TOKEN
+bot = AsyncTeleBot(TOKEN)
+
 async def main(message):
     message_split = message.text.split(" ")
     try:
@@ -56,8 +60,10 @@ async def main(message):
         else:
             response = response.json()
             await bot.send_message(message.chat.id, f"api is not work\n{response}", timeout=20)
-    except:
-        await bot.send_message(message.chat.id, "Вы не указали город", timeout=5)
+    except Exception as e:
+        await bot.send_message(message.chat.id, "Вы не указали город")
+        print(e)
 
 
 print("Cogs | weather.py is ready")
+#TODO сделать дбшку

@@ -26,7 +26,7 @@ async def main(message, msgsplit):
                         new_file.write(dowloaded_file)
                 with sqlite3.connect(OSU_USERS_DB) as db:
                     cursor = db.cursor()
-                    query = f""" REPLACE INTO osu_skins(tg_id, file_name) VALUES({tg_id}, '{tg_id}-{message.document.file_name}')"""
+                    query = f""" REPLACE INTO osu_skins(tg_id, file_name) VALUES({tg_id}, '{tg_id}@{message.document.file_name}')"""
                     cursor.execute(query)
                 await bot.reply_to(message, 'skin saved')
             else:
@@ -72,13 +72,16 @@ async def main(message, msgsplit):
                         break
                     else:
                         user_exists = False
+                
                 if user_exists:
+                    tempmsg = await bot.reply_to(message, 'Skin is uploading...')
                     if message.reply_to_message:
-                        with open(f'{OSU_SKIN_PATH}{file_name}', 'rb') as file:
-                            await bot.send_document(message.chat.id, file, message.id, f'''@{message.from_user.username},\nIt's his skin''')
+                        text = f'''@{message.from_user.username}, It's his skin'''
                     elif not message.reply_to_message:
-                        with open(f'{OSU_SKIN_PATH}{file_name}', 'rb') as file:
-                            await bot.send_document(message.chat.id, file, message.id, f'Your skin, @{message.from_user.username}')
+                        text = f'Your skin, @{message.from_user.username}'
+                    with open(f'{OSU_SKIN_PATH}{file_name}', 'rb') as file:
+                        await bot.send_document(message.chat.id, file, message.id, text)
+                        await bot.delete_message(tempmsg.chat.id, tempmsg.id)
                 elif not user_exists:
                     if message.reply_to_message:
                         await bot.reply_to(message, "ERROR: he didn't added skin")

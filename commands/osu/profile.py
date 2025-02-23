@@ -35,11 +35,11 @@ async def main(message, msgsplit, all_modes):
                 if i[0] == tg_id:
                     username = i[1]
                     mode = i[3]
-                    text = text + f'\n#{i[2]}\n'
+                    skinid = i[2]
                     break
         try:
             username = username
-            button_for_skin = types.InlineKeyboardButton(f'''{message.from_user.first_name}'s skin''', callback_data='osu_skin_view')
+            button_for_skin = types.InlineKeyboardButton(f'''{message.from_user.first_name}'s skin''', callback_data=f'osu_skin_view@{skinid}')
         except:
             username = None
 
@@ -63,7 +63,7 @@ async def main(message, msgsplit, all_modes):
             markup.add(button1)
             if 'button_for_skin' in locals():
                 markup.add(button_for_skin)
-            text += f"""ID: {response['id']}\n"""    #TODO сделать медальки
+            text += f"""ID: {response['id']}\n"""  
             text += f"""Name: {response['username']} ({mode})\n"""
             text += f"""Global rank: #{response['statistics']['global_rank']}\n"""
             text += f"""Country rank: #{response['statistics']['rank']['country']}({response['country_code']})\n"""

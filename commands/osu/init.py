@@ -37,7 +37,7 @@ async def main(message):
     elif flag in ['r', 'recent', 'к']:
         await recent.main(message, msgsplit, all_modes)
     ###  set nick
-    elif flag in ['nick', 'set']:
+    elif flag in ['nick', 'set', 'тшсл', 'ыуе']:
         await nick.main(message, msgsplit, all_modes)
     ###  avatar
     elif flag in ['avatar']:

@@ -27,7 +27,7 @@ async def callback(call):
         await main(call.message, back_button=True)
     elif call.data == "info_about_bot":
         markup = types.InlineKeyboardMarkup()
-        button1 = types.InlineKeyboardButton("Bot code(github)", "https://github.com/XboXoffc/mytgbot")
+        button1 = types.InlineKeyboardButton("Bot code(github)", "https://github.com/XboXoffc/osubot")
         backbutton = types.InlineKeyboardButton('Back', callback_data='info_back')
         markup.add(button1)
         markup.add(backbutton)
@@ -42,6 +42,7 @@ There you can check weather and etc
         markup.add(backbutton)
         text = """
 dev: @xbox202
+dev channel: @xboxosu
 Write me if bot don't work correctly        
 """
         await bot.edit_message_text(text, call.message.chat.id, call.message.id, reply_markup=markup)
