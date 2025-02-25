@@ -1,7 +1,7 @@
 TG_TOKEN = ""
 
 WHEATHER_API = ""
-WHEATHER_DB_PATH = ""
+WHEATHER_DB_PATH = "osubot/data/wheather.db"
 
 OSU_CLIENT_ID = 
 OSU_CLIENT_SECRET = ''
