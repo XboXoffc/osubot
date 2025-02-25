@@ -3,15 +3,48 @@ import asyncio
 import requests
 import config
 from commands import other
+import sqlite3
 
 API_KEY = config.WHEATHER_API
+DB_PATH = config.WHEATHER_DB_PATH
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
+
+def isempty(list: list or tuple, index: int):
+    try:
+        trash = list[index]
+        return False
+    except:
+        return True
 
 async def main(message):
     message_split = message.text.split(" ")
     try:
-        city = message_split[1]
+        if not isempty(message_split, 1) and message_split[1][0] == '+':
+            city = message_split[1]
+            city.removeprefix('+')
+            with sqlite3.connect(DB_PATH) as db:
+                cursor = db.cursor()
+                query = ''' CREATE TABLE IF NOT EXISTS users_city(
+                    tg_id INTEGER UNIQUE,
+                    tg_user TEXT,
+                    city TEXT
+                    ) '''
+                query1 = f'''  REPLACE INTO users_city(tg_id, tg_user, city) VALUES({message.from_user.id}, "{message.from_user.username}", "{city}") '''
+                cursor.execute(query)
+                cursor.execute(query1)
+        elif isempty(message_split, 1):
+            with sqlite3.connect(DB_PATH) as db:
+                cursor = db.cursor()
+                query = '''  SELECT tg_id, city FROM users_city  '''
+                cursor.execute(query)
+                users_city = cursor.fetchall()
+                for data in users_city:
+                    if message.from_user.id == data[0]:
+                        city = data[1]
+                        break
+        else:
+            city = message_split[1]
         flags = message_split
         days = 2
         api_key=API_KEY
@@ -61,9 +94,8 @@ async def main(message):
             response = response.json()
             await bot.send_message(message.chat.id, f"api is not work\n{response}", timeout=20)
     except Exception as e:
-        await bot.send_message(message.chat.id, "Вы не указали город")
+        await bot.send_message(message.chat.id, "Вы не указали город, добавьте свой город указав '+' в начале города")
         print(e)
 
 
 print("Cogs | weather.py is ready")
-#TODO сделать дбшку
