@@ -2,19 +2,14 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 import asyncio
 import config
-from commands.osu import osuapi
 import sqlite3
+from commands import other
 
-OSU_ID = config.OSU_CLIENT_ID
-OSU_SECRET = config.OSU_CLIENT_SECRET
-X_API_VERSION = config.X_API_VERSION
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-osu_api = osuapi.Osu(OSU_ID, OSU_SECRET, X_API_VERSION)
-
-async def main(message, msgsplit, all_modes, offset = '0', isinline=False, delmsgid=None, delchatid=None):
+async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=False, delmsgid=None, delchatid=None):
     text = ''
     osuuser=None
     osuid=None
@@ -45,18 +40,15 @@ async def main(message, msgsplit, all_modes, offset = '0', isinline=False, delms
                     osumode = users[2]
                     break
     
-    for i in all_modes:
-        if i in msgsplit:
-            index = msgsplit.index(i)
-            osumode = msgsplit[index]
+    
     osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
-    if osumode == "std":
+    if osumode in ("-std", '-osu'):
         osumode = 'osu'
-    elif osumode == 'm':
+    elif osumode in ('-m', '-mania'):
         osumode = 'mania'
-    elif osumode == 't':
+    elif osumode in ('-t', '-taiko'):
         osumode = 'taiko'
-    elif osumode is ('c' or 'ctb' or 'catch'):
+    elif osumode in ('-c' or '-ctb' or '-catch'):
         osumode = 'fruits'
 
     if not isinline:
@@ -90,13 +82,20 @@ async def main(message, msgsplit, all_modes, offset = '0', isinline=False, delms
             await bot.delete_message(delchatid, delmsgid)
 
         text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
-        
-        text += f'''[{recent_res['beatmapset']['artist']} - {recent_res['beatmapset']['title']}]({recent_res['beatmap']['url']}) '''
-        text += f'''[[{recent_res['beatmap']['version']}, {recent_res['beatmap']['difficulty_rating']}✩]] by {recent_res['beatmapset']['creator']} '''
+
+        artist_title = f'''{recent_res['beatmapset']['artist']} - {recent_res['beatmapset']['title']}'''
+        artist_title = artist_title.replace('[', '')
+        artist_title = artist_title.replace(']', '')
+        text += f'''[{artist_title}]({recent_res['beatmap']['url']}) '''
+        text += f'''[[{recent_res['beatmap']['version']}, {recent_res['beatmap']['difficulty_rating']}✩]] by [{recent_res['beatmapset']['creator']}] '''
         text += f'''<{recent_res['beatmap']['status']}>\n'''
 
         beatmapmods = ''.join(recent_res['mods'][i]['acronym'] for i in range(len(recent_res['mods'])))
-        beatmaptime = f'''{beatmap_res['total_length']//60}:{beatmap_res['total_length']%60}'''
+        beatmapmin = beatmap_res['total_length']//60
+        beatmapsec = str(beatmap_res['total_length']%60)
+        if len(beatmapsec) == 1:
+            beatmapsec = f"""0{beatmapsec}"""
+        beatmaptime = f'''{beatmapmin}:{beatmapsec}'''
         text += f'''{beatmaptime} | AR:{beatmap_res['ar']} OD:{beatmap_res['accuracy']} CS:{beatmap_res['cs']} HP:{beatmap_res['drain']}  {round(beatmap_res['bpm'])}BPM | +{beatmapmods}\n'''
 
         text += f'''\n'''
@@ -124,7 +123,12 @@ async def main(message, msgsplit, all_modes, offset = '0', isinline=False, delms
         text += f'''*300*: {great}  *100*: {ok}  *50*: {meh}  *Miss*:{miss}\n'''
 
         rank = recent_res['rank'] if recent_res['passed'] else 'F'
-        text += f'''Rank: {rank}\n'''
+        percentage = f"""({round(recent_res["maximum_statistics"]["great"]/beatmap_res['max_combo']*100, 2)}%)""" if recent_res['passed'] == False else ''
+        text += f'''Rank: {rank} {percentage} \n'''
+
+        datetime = other.time(recent_res['ended_at'])
+        datetime = datetime['day'] + '.' + datetime['month'] + '.' + datetime['year'] + ' ' + datetime['hour'] + ':' + datetime['min']
+        text += f'''{datetime}\n'''
 
         text += f'''\n'''
         text += f'''Score url: https://osu.ppy.sh/scores/{recent_res['id']}\n'''

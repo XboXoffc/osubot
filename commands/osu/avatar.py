@@ -3,17 +3,11 @@ from telebot import types
 import config
 import asyncio
 import requests
-from commands.osu import osuapi
 
-OSU_ID = config.OSU_CLIENT_ID
-OSU_SECRET = config.OSU_CLIENT_SECRET
-X_API_VERSION = config.X_API_VERSION
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-osu_api = osuapi.Osu(OSU_ID, OSU_SECRET, X_API_VERSION)
-
-async def main(message, msgsplit):
+async def main(message, msgsplit, osu_api):
         user = msgsplit[1]
         if user != '$empty$':
             try:

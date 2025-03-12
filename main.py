@@ -4,6 +4,7 @@ import requests
 import config
 from commands import start, info, support, weather, other
 from commands.osu import init, osucallback
+from commands.osu.osuapistorage import osu_api
 
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
@@ -34,7 +35,7 @@ async def messages(message):
         await weather.main(message)
     #Osu!
     elif msgsplit[0] in ['/osu' ,'o' ,'su' , 'osu', 'щ', 'ыг']:
-        await init.main(message)
+        await init.main(message, osu_api)
 
 @bot.callback_query_handler(func=lambda call:True)
 async def Callback(call):
@@ -42,7 +43,7 @@ async def Callback(call):
     if calldata_prefix[0] == 'info':
         await info.callback(call)
     elif calldata_prefix[0] == 'osu':
-        await osucallback.main(call)
+        await osucallback.main(call, osu_api)
 
 
 print("Bot | already started\n\n")

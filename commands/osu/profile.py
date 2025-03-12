@@ -4,20 +4,15 @@ import asyncio
 import config
 import requests
 import sqlite3
-from commands.osu import osuapi
 
-OSU_ID = config.OSU_CLIENT_ID
-OSU_SECRET = config.OSU_CLIENT_SECRET
-X_API_VERSION = config.X_API_VERSION
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-osu_api = osuapi.Osu(OSU_ID, OSU_SECRET, X_API_VERSION)
-
-async def main(message, msgsplit, all_modes):
+async def main(message, msgsplit, all_modes, osu_api):
     text = ''
-    mode = ''
+    osumode = ''
+    username = None
     if message.reply_to_message:
         tg_id = message.reply_to_message.from_user.id
     elif not message.reply_to_message:
@@ -34,37 +29,34 @@ async def main(message, msgsplit, all_modes):
             for i in users:
                 if i[0] == tg_id:
                     username = i[1]
-                    mode = i[3]
+                    osumode = i[3]
                     skinid = i[2]
                     break
-        try:
-            username = username
+        if username != None:
             button_for_skin = types.InlineKeyboardButton(f'''{message.from_user.first_name}'s skin''', callback_data=f'osu_skin_view@{skinid}')
-        except:
-            username = None
 
-    mode = next((m for m in msgsplit if m in set(all_modes)), mode)
-    if mode == "std":
-        mode = 'osu'
-    elif mode == 'm':
-        mode = 'mania'
-    elif mode == 't':
-        mode = 'taiko'
-    elif mode is ('c' or 'ctb' or 'catch'):
-        mode = 'fruits'
+    osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
+    if osumode in ("-std", '-osu'):
+        osumode = 'osu'
+    elif osumode in ('-m', '-mania'):
+        osumode = 'mania'
+    elif osumode in ('-t', '-taiko'):
+        osumode = 'taiko'
+    elif osumode in ('-c' or '-ctb' or '-catch'):
+        osumode = 'fruits'
 
     if username != None:
         try:
-            response = osu_api.profile(username, mode).json()
-            if mode == '':
-                mode = response['playmode']
+            response = osu_api.profile(username, osumode).json()
+            if osumode == '':
+                osumode = response['playmode']
             markup = types.InlineKeyboardMarkup()
             button1 = types.InlineKeyboardButton('profile url', f'https://osu.ppy.sh/users/{response["id"]}')
             markup.add(button1)
             if 'button_for_skin' in locals():
                 markup.add(button_for_skin)
             text += f"""ID: {response['id']}\n"""  
-            text += f"""Name: {response['username']} ({mode})\n"""
+            text += f"""Name: {response['username']} ({osumode})\n"""
             text += f"""Global rank: #{response['statistics']['global_rank']}\n"""
             text += f"""Country rank: #{response['statistics']['rank']['country']}({response['country_code']})\n"""
             text += f"""PP: {response['statistics']['pp']}\n"""

@@ -3,18 +3,12 @@ from telebot import types
 import asyncio
 import config
 import sqlite3
-from commands.osu import osuapi
 
-OSU_ID = config.OSU_CLIENT_ID
-OSU_SECRET = config.OSU_CLIENT_SECRET
-X_API_VERSION = config.X_API_VERSION
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-osu_api = osuapi.Osu(OSU_ID, OSU_SECRET, X_API_VERSION)
-
-async def main(message, msgsplit):
+async def main(message, msgsplit, osu_api):
     username = None
     if msgsplit[1] == '$empty$':
         with sqlite3.connect(OSU_USERS_DB) as db:
