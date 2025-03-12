@@ -9,6 +9,7 @@ sqlite3
 - su help
 - su p
 - su r
+- su t
 - su sk
 - su nick
 - su avatar
