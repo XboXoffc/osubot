@@ -42,8 +42,10 @@ async def main(call, osu_api):
 
         msgsplit = call.message.reply_to_message.text.split(' ')
         msgsplit.pop(0)
+        for i in range(3):
+            msgsplit.append('$empty$')
 
-        await recent.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, offset=offset, isinline=True, delmsgid=call.message.id, delchatid=call.message.chat.id)
+        await recent.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, offset=offset, isinline=True, delmsgid=call.message.id, delchatid=call.message.chat.id, osuid=datasplit[2], osumode=datasplit[3])
 
     elif datasplit[0] in ['osu_topscores_update', 'osu_topscores_prev', 'osu_topscores_next'] and call.message.reply_to_message:
         page = int(datasplit[1])
@@ -58,7 +60,7 @@ async def main(call, osu_api):
         for i in range(3):
             msgsplit.append('$empty$')
         
-        await topscores.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, isinline=True, limit=limit, page=page, botcall=call)
+        await topscores.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, isinline=True, limit=limit, page=page, botcall=call, osuid=datasplit[3], osumode=datasplit[4])
     
     elif datasplit[0] in ['osu_del']:
         await bot.delete_message(call.message.chat.id, call.message.id)

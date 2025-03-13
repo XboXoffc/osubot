@@ -9,11 +9,11 @@ OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=False, delmsgid=None, delchatid=None):
+async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=False, delmsgid=None, delchatid=None, osuid=None, osumode=None):
+    print("sdgsdffdshsdhdghdf")
+    print(msgsplit)
     text = ''
     osuuser=None
-    osuid=None
-    osumode=None
     allflags = ['-offset', '-off']
     user_res = None
     recent_res = None
@@ -23,7 +23,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         osuid = response['id']
         osuuser = response['username']
         osumode = response['playmode']
-    else:
+    elif osuid == None and not isinline:
         with sqlite3.connect(OSU_USERS_DB) as db:
             if message.reply_to_message:
                 tgid = message.reply_to_message.from_user.id
@@ -56,11 +56,11 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
             if i in msgsplit:
                 index = msgsplit.index(i) + 1
                 offset = msgsplit[index] if msgsplit[index] != '$empty$' else '0'
-        try:
-            if int(offset) <= 0:
-                offset = '0'
-        except:
+    try:
+        if int(offset) <= 0:
             offset = '0'
+    except:
+        offset = '0'
 
     
     if osuid != None:
@@ -75,9 +75,9 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
 
     markup = types.InlineKeyboardMarkup()
-    buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}')
-    buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}')
-    if recent_res != None:
+    buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
+    buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
+    if len(recent_res) != 0:
         if isinline:
             await bot.delete_message(delchatid, delmsgid)
 

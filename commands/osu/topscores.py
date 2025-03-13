@@ -61,10 +61,8 @@ async def template(message, res_scores, offset, limit, osumode, osu_api):
     
     return text
 
-async def main(message, msgsplit, all_modes, osu_api, isinline=None, limit = 3, page = 0, botcall=None):
-    osuuser = None  
-    osuid = None
-    osumode = None
+async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3, page = 0, botcall=None, osuid = None, osumode = None):
+    osuuser = None
     offset = 0
     res_scores = None
     allflags = ['-p', '-page', '-l', '-limit']
@@ -73,7 +71,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=None, limit = 3, 
         osuid = response['id']
         osuuser = response['username']
         osumode = response['playmode']
-    else:
+    elif osuid == None and not isinline:
         with sqlite3.connect(OSU_USERS_DB) as db:
             if message.reply_to_message:
                 tgid = message.reply_to_message.from_user.id
@@ -118,9 +116,9 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=None, limit = 3, 
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
 
     markup = types.InlineKeyboardMarkup()
-    ButtonCounter = types.InlineKeyboardButton(f'''{page+1}/{maxpage}''', callback_data=f'osu_topscores_update@{page}@{limit}')
-    ButtonPrev = types.InlineKeyboardButton('< Prev', callback_data=f'osu_topscores_prev@{page}@{limit}')
-    ButtonNext = types.InlineKeyboardButton('Next >', callback_data=f'osu_topscores_next@{page}@{limit}')
+    ButtonCounter = types.InlineKeyboardButton(f'''{page+1}/{maxpage}''', callback_data=f'osu_topscores_update@{page}@{limit}@{osuid}@{osumode}')
+    ButtonPrev = types.InlineKeyboardButton('< Prev', callback_data=f'osu_topscores_prev@{page}@{limit}@{osuid}@{osumode}')
+    ButtonNext = types.InlineKeyboardButton('Next >', callback_data=f'osu_topscores_next@{page}@{limit}@{osuid}@{osumode}')
     if len(res_scores) != 0 and page <= maxpage:
         text = await template(message, res_scores, offset, limit, osumode, osu_api)
         if page <= 0:
