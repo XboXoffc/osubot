@@ -122,7 +122,9 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         text += f'''*300*: {great}  *100*: {ok}  *50*: {meh}  *Miss*:{miss}\n'''
 
         rank = recent_res['rank'] if recent_res['passed'] else 'F'
-        percentage = f"""({round(recent_res["maximum_statistics"]["great"]/beatmap_res['max_combo']*100, 2)}%)""" if recent_res['passed'] == False else ''
+        totalhitobjects = beatmap_res['count_circles'] + beatmap_res['count_sliders'] + beatmap_res['count_spinners']
+        scorehits = recent_res["maximum_statistics"]["great"]
+        percentage = f"""({round(scorehits/totalhitobjects*100, 2)}%)""" if recent_res['passed'] == False else ''
         text += f'''Rank: {rank} {percentage} \n'''
 
         datetime = other.time(recent_res['ended_at'])
