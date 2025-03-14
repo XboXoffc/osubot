@@ -9,15 +9,13 @@ OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=False, delmsgid=None, delchatid=None, osuid=None, osumode=None):
-    print("sdgsdffdshsdhdghdf")
-    print(msgsplit)
+async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=False, botcall=None, osuid=None, osumode=None):
     text = ''
     osuuser=None
     allflags = ['-offset', '-off']
-    user_res = None
-    recent_res = None
-    beatmap_res = None
+    user_res = {}
+    recent_res = {}
+    beatmap_res = {}
     if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
         response = osu_api.profile(msgsplit[1]).json()
         osuid = response['id']
@@ -78,8 +76,8 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
     buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
     if len(recent_res) != 0:
-        if isinline:
-            await bot.delete_message(delchatid, delmsgid)
+        #if isinline:
+        #    await bot.delete_message(delchatid, delmsgid)
 
         text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
 
@@ -99,6 +97,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         text += f'''{beatmaptime} | AR:{beatmap_res['ar']} OD:{beatmap_res['accuracy']} CS:{beatmap_res['cs']} HP:{beatmap_res['drain']}  {round(beatmap_res['bpm'])}BPM | +{beatmapmods}\n'''
 
         text += f'''\n'''
+
         text += f'''Score: {recent_res['classic_total_score']} | Combo: {recent_res['max_combo']}/{beatmap_res['max_combo']} | Accuracy: {round(recent_res['accuracy']*100, 2)}%\n'''
         
         if isinstance(recent_res['pp'], (int, float)):
@@ -134,12 +133,14 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         text += f'''Score url: https://osu.ppy.sh/scores/{recent_res['id']}\n'''
         
         markup.add(buttonNext, buttonPrev)
-        await bot.send_photo(message.chat.id, beatmap_res['beatmapset']['covers']['card@2x'], text, reply_to_message_id=message.id, parse_mode='MARKDOWN', reply_markup=markup)
-    elif recent_res == None and osuid != None:
+        if isinline:
+            await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
+        else:
+            await bot.reply_to(message, text, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
+    elif len(recent_res) == 0 and osuid != None:
         text = f'ERROR: no recent scores for 24 hours\noffset = {offset}'
         if isinline:
             markup.add(buttonNext)
-            await bot.delete_message(delchatid, delmsgid)
-            await bot.reply_to(message, text, reply_markup=markup)
+            await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup)
         else:
             await bot.reply_to(message, text)

@@ -45,7 +45,7 @@ async def main(call, osu_api):
         for i in range(3):
             msgsplit.append('$empty$')
 
-        await recent.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, offset=offset, isinline=True, delmsgid=call.message.id, delchatid=call.message.chat.id, osuid=datasplit[2], osumode=datasplit[3])
+        await recent.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, offset=offset, isinline=True, botcall=call, osuid=datasplit[2], osumode=datasplit[3])
 
     elif datasplit[0] in ['osu_topscores_update', 'osu_topscores_prev', 'osu_topscores_next'] and call.message.reply_to_message:
         page = int(datasplit[1])
