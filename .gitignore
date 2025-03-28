@@ -1,0 +1,7 @@
+/venv
+/data/*
+/data/skins/*
+
+/__pycache__
+*/__pycache__
+*/*/__pycache__

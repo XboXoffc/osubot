@@ -79,7 +79,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         #if isinline:
         #    await bot.delete_message(delchatid, delmsgid)
 
-        text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
+        text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/users/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
 
         artist_title = f'''{recent_res['beatmapset']['artist']} - {recent_res['beatmapset']['title']}'''
         artist_title = artist_title.replace('[', '')

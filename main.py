@@ -5,6 +5,9 @@ import config
 from commands import start, info, support, weather, other
 from commands.osu import init, osucallback
 from commands.osu.osuapistorage import osu_api
+import warnings
+
+warnings.filterwarnings("ignore")
 
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)

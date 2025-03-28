@@ -9,8 +9,14 @@ TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
 async def main(message):
+    text = ''
     try:
-        text = ''
+        with open(OSU_USERS_DB, 'x'):
+            pass
+        text += 'file created'
+    except:
+        text += 'file already created'
+    try:
         ## for general db
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
@@ -40,3 +46,4 @@ async def main(message):
         await bot.reply_to(message, text)
     except Exception as e:
         print(e)
+        await bot.reply_to(message, f'ERROR: {e}')

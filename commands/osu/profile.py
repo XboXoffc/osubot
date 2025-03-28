@@ -59,8 +59,9 @@ async def main(message, msgsplit, all_modes, osu_api):
             markup.add(button1)
             if 'button_for_skin' in locals():
                 markup.add(button_for_skin)
-            text += f"""ID: {response['id']}\n"""  
-            text += f"""Name: {response['username']} ({osumode})\n"""
+            text += f"""ID: {response['id']}\n"""
+            username = response['username'].replace('_', '''\_''')
+            text += f"""Name: {username} ({osumode})\n"""
             text += f"""Global rank: #{response['statistics']['global_rank']}\n"""
             text += f"""Country rank: #{response['statistics']['rank']['country']}({response['country_code']})\n"""
             text += f"""PP: {response['statistics']['pp']}\n"""
@@ -70,7 +71,8 @@ async def main(message, msgsplit, all_modes, osu_api):
             text += f"""Play time: {response['statistics']['play_time']//86400}days {response['statistics']['play_time']//3600%24}hour {response['statistics']['play_time']//60%60}min ({response['statistics']['play_time']//3600} hours)\n"""
             text += f"""*SSH*:{response['statistics']['grade_counts']['ssh']}  *SS*:{response['statistics']['grade_counts']['ss']}  *SH*:{response['statistics']['grade_counts']['sh']}  *S*:{response['statistics']['grade_counts']['s']}  *A*:{response['statistics']['grade_counts']['a']}\n"""
             await bot.send_photo(message.chat.id, response['cover']['url'],text , reply_to_message_id=message.id, reply_markup=markup, parse_mode='MARKDOWN')
-        except:
+        except Exception as e:
+            print(e)
             await bot.reply_to(message, "ERROR: username is not exists")
     else:
         await bot.reply_to(message, 'ERROR: write username OR set nick `su nick <username>`', parse_mode="MARKDOWN")

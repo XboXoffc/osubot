@@ -17,7 +17,7 @@ async def main(message, msgsplit):
                 tg_id = message.from_user.id
                 file_info = await bot.get_file(message.document.file_id)
                 dowloaded_file = await bot.download_file(file_info.file_path)
-                src = f'{OSU_SKIN_PATH}{tg_id}-{message.document.file_name}'
+                src = f'{OSU_SKIN_PATH}{tg_id}@{message.document.file_name}'
                 try:
                     with open(src, 'wb') as new_file:
                         new_file.write(dowloaded_file)

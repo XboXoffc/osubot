@@ -15,6 +15,7 @@ all_modes = init.all_modes
 async def main(call, osu_api):
     datasplit = call.data.split('@')
     if datasplit[0] in ['osu_skin_view']:
+        issend = False
         skinid = datasplit[1]
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
@@ -30,7 +31,7 @@ async def main(call, osu_api):
                         await bot.delete_message(tempmsg.chat.id, tempmsg.id)
                     issend = True
                     break
-            if issend not in locals() and issend == False:
+            if not issend:
                 await bot.reply_to(call.message, "ERROR: he didn't added skin")
                 
     elif datasplit[0] in ['osu_recent_prev', 'osu_recent_next'] and call.message.reply_to_message:
