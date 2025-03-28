@@ -13,7 +13,7 @@ bot = AsyncTeleBot(TOKEN)
 async def template(message, res_scores, offset, limit, osumode, osu_api):
     scores_limit = len(res_scores)
     text = ''
-    text += f'''{res_scores[0]['user']['username']}'s top scores [[{osumode}]]:\n'''
+    text += f'''[{res_scores[0]['user']['username']}'s] top scores [[{osumode}]]:\n'''
     for i in range(scores_limit):
         res_beatmap = osu_api.beatmap(res_scores[i]['beatmap']['id']).json()
 
@@ -58,7 +58,7 @@ async def template(message, res_scores, offset, limit, osumode, osu_api):
         datetime = other.time(res_scores[i]['ended_at'])
         datetime = datetime['day'] + '.' + datetime['month'] + '.' + datetime['year'] + ' ' + datetime['hour'] + ':' + datetime['min']
         text += f'''{datetime}\n\n'''
-    
+
     return text
 
 async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3, page = 0, botcall=None, osuid = None, osumode = None):
@@ -66,6 +66,11 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
     offset = 0
     res_scores = None
     allflags = ['-p', '-page', '-l', '-limit']
+    if message.reply_to_message:
+        tgid = message.reply_to_message.from_user.id
+    elif not message.reply_to_message:
+        tgid = message.from_user.id
+
     if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
         response = osu_api.profile(msgsplit[1]).json()
         osuid = response['id']
@@ -73,10 +78,6 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
         osumode = response['playmode']
     elif osuid == None and not isinline:
         with sqlite3.connect(OSU_USERS_DB) as db:
-            if message.reply_to_message:
-                tgid = message.reply_to_message.from_user.id
-            elif not message.reply_to_message:
-                tgid = message.from_user.id
             cursor = db.cursor()
             queue = ''' SELECT tg_id, osu_id, osu_mode, osu_username FROM osu_users '''
             cursor.execute(queue)

@@ -11,7 +11,7 @@ bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit, all_modes, osu_api):
     text = ''
-    osumode = ''
+    osumode = 'osu'
     username = None
     if message.reply_to_message:
         tg_id = message.reply_to_message.from_user.id
@@ -60,8 +60,7 @@ async def main(message, msgsplit, all_modes, osu_api):
             if 'button_for_skin' in locals():
                 markup.add(button_for_skin)
             text += f"""ID: {response['id']}\n"""
-            username = response['username'].replace('_', '''\_''')
-            text += f"""Name: {username} ({osumode})\n"""
+            text += f"""Name: [{response['username']} ({osumode})]\n"""
             text += f"""Global rank: #{response['statistics']['global_rank']}\n"""
             text += f"""Country rank: #{response['statistics']['rank']['country']}({response['country_code']})\n"""
             text += f"""PP: {response['statistics']['pp']}\n"""
