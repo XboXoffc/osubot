@@ -105,6 +105,14 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
                 index = msgsplit.index(i) + 1
                 page = int(msgsplit[index]) if msgsplit[index] != '$empty$' and other.isint(msgsplit[index]) else 0
                 page -= 1
+        for i in ['-l', '-limit']:
+            if i in msgsplit:
+                index = msgsplit.index(i) + 1
+                limit = int(msgsplit[index]) if msgsplit[index] != '$empty$' and other.isint(msgsplit[index]) else 3
+    
+    if limit > 15:
+        limit = 3
+
     offset = page * limit
     if offset < 0:
         offset = 0
