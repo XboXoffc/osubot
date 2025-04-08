@@ -4,6 +4,7 @@ import asyncio
 import config
 import requests
 import sqlite3
+from commands.osu.groups import groupdb
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -13,6 +14,7 @@ async def main(message, msgsplit, all_modes, osu_api):
     text = ''
     osumode = 'osu'
     username = None
+    response = None
     if message.reply_to_message:
         tg_id = message.reply_to_message.from_user.id
     elif not message.reply_to_message:
@@ -52,8 +54,6 @@ async def main(message, msgsplit, all_modes, osu_api):
     if username != None:
         try:
             response = osu_api.profile(username, osumode).json()
-            if osumode == '':
-                osumode = response['playmode']
             markup = types.InlineKeyboardMarkup()
             button1 = types.InlineKeyboardButton('profile url', f'https://osu.ppy.sh/users/{response["id"]}')
             markup.add(button1)
@@ -75,3 +75,13 @@ async def main(message, msgsplit, all_modes, osu_api):
             await bot.reply_to(message, "ERROR: username is not exists")
     else:
         await bot.reply_to(message, 'ERROR: write username OR set nick `su nick <username>`', parse_mode="MARKDOWN")
+
+    if response != None and message.chat.type in ["group", "supergroup"]:
+        if message.reply_to_message:
+            await groupdb.main("profile", message.chat.id, message.reply_to_message.from_user.id, message.reply_to_message.from_user.username,
+                                response['id'], response['username'], osumode, 
+                                response['statistics']['pp'], response['statistics']['global_rank'], response['statistics']['hit_accuracy'], response['statistics']['play_count'])
+        elif not message.reply_to_message:
+            await groupdb.main("profile", message.chat.id, message.from_user.id, message.from_user.username,
+                                response['id'], response['username'], osumode, 
+                                response['statistics']['pp'], response['statistics']['global_rank'], response['statistics']['hit_accuracy'], response['statistics']['play_count'])

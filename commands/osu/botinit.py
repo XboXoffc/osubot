@@ -5,6 +5,7 @@ import sqlite3
 
 OSU_SKIN_PATH = config.OSU_SKIN_PATH
 OSU_USERS_DB = config.OSU_USERS_DB
+OSU_GROUPS_DB = config.OSU_GROUPS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
@@ -13,9 +14,17 @@ async def main(message):
     try:
         with open(OSU_USERS_DB, 'x'):
             pass
-        text += 'file created'
+        text += 'osu users db created\n'
     except:
-        text += 'file already created'
+        text += 'osu users db already created\n'
+    
+    try:
+        with open(OSU_GROUPS_DB, "x"):
+            pass
+        text += f'group db created\n'
+    except:
+        text += f'group db already created\n'
+
     try:
         ## for general db
         with sqlite3.connect(OSU_USERS_DB) as db:
