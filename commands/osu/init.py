@@ -38,7 +38,7 @@ async def main(message, osu_api):
     elif flag in ['nick', 'set', 'тшсл', 'ыуе']:
         await nick.main(message, msgsplit, all_modes, osu_api)
     ###  group top
-    elif flag in ['group', 'g', 'п']:
+    elif flag in ['chat', 'c', 'с']:
         await grouptop.main(message, msgsplit, all_modes)
     ###  avatar
     elif flag in ['avatar']:
