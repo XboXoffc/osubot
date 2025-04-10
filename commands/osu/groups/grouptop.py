@@ -48,7 +48,7 @@ async def main(message, msgsplit, all_modes):
     
     if MembersTop != None:
         text = await template.main(message, MembersTop, limit, osumode, sortby.replace('osu_', ''))
-        await bot.reply_to(message, text, parse_mode="MARKDOWN")
+        await bot.reply_to(message, text, parse_mode="MARKDOWN", link_preview_options=types.LinkPreviewOptions(True))
     elif MembersTop == None:
         await bot.reply_to(message, "ERROR: no result in sql for any reason")
     
