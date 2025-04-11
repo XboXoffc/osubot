@@ -10,6 +10,12 @@ bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit, osu_api):
     username = None
+
+    if message.reply_to_message:
+        tgid = message.reply_to_message.from_user.id
+    elif not message.reply_to_message:
+        tgid = message.from_user.id
+
     if msgsplit[1] == '$empty$':
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
@@ -17,24 +23,24 @@ async def main(message, msgsplit, osu_api):
             cursor.execute(query)
             users = cursor.fetchall()
             for user in users:
-                if user[0] == message.from_user.id:
+                if user[0] == tgid:
                     username = user[1]
                     mode = user[2]
                     break
                 else:
                     username = None
                     mode = None
-    if mode == "std":
+    if mode == "-std":
         mode = 'osu'
-    elif mode == 'm':
+    elif mode == '-m':
         mode = 'mania'
-    elif mode == 't':
+    elif mode == '-t':
         mode = 'taiko'
-    elif mode is ('c' or 'ctb' or 'catch'):
+    elif mode is ('-c' or '-ctb' or '-catch'):
         mode = 'fruits'
-    response = osu_api.profile(username, mode).json()
     
     if username != None:
+        response = osu_api.profile(username, mode).json()
         pp = response['statistics']['pp']
         playtime = response['statistics']['play_time']//3600
         expected_playtime = -3.94 + (0.067 * pp) + ((6.78 * 0.000001) * (pp*pp))
