@@ -15,6 +15,7 @@ async def main(message, msgsplit, all_modes, osu_api):
     osumode = 'osu'
     username = None
     response = None
+    from_db = False
     if message.reply_to_message:
         tg_id = message.reply_to_message.from_user.id
     elif not message.reply_to_message:
@@ -40,6 +41,8 @@ async def main(message, msgsplit, all_modes, osu_api):
             else:
                 skin_username = message.from_user.first_name
             button_for_skin = types.InlineKeyboardButton(f'''{skin_username}'s skin''', callback_data=f'osu_skin_view@{skinid}')
+        else:
+            from_db = True
 
     osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
     if osumode in ("-std", '-osu'):
@@ -76,7 +79,7 @@ async def main(message, msgsplit, all_modes, osu_api):
     else:
         await bot.reply_to(message, 'ERROR: write username OR set nick `su nick <username>`', parse_mode="MARKDOWN")
 
-    if response != None and message.chat.type in ["group", "supergroup"]:
+    if response != None and message.chat.type in ["group", "supergroup"] and from_db:
         if message.reply_to_message:
             await groupdb.main("profile", message.chat.id, message.reply_to_message.from_user.id, message.reply_to_message.from_user.username,
                                 response['id'], response['username'], osumode, 
