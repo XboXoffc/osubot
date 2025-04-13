@@ -41,7 +41,6 @@ async def main(message, msgsplit, all_modes, osu_api):
             else:
                 skin_username = message.from_user.first_name
             button_for_skin = types.InlineKeyboardButton(f'''{skin_username}'s skin''', callback_data=f'osu_skin_view@{skinid}')
-        else:
             from_db = True
 
     osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
