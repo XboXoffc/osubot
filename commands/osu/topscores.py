@@ -116,7 +116,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
     offset = page * limit
     if offset < 0:
         offset = 0
-    maxpage = math.ceil(100/limit)
+    maxpage = math.ceil(200/limit)
 
     if osuid != None:
         res_scores = osu_api.user_scores(osuid, 'best', mode=osumode, limit=str(limit), offset=str(offset)).json()
@@ -128,7 +128,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
     ButtonCounter = types.InlineKeyboardButton(f'''{page+1}/{maxpage}''', callback_data=f'osu_topscores_update@{page}@{limit}@{osuid}@{osumode}')
     ButtonPrev = types.InlineKeyboardButton('< Prev', callback_data=f'osu_topscores_prev@{page}@{limit}@{osuid}@{osumode}')
     ButtonNext = types.InlineKeyboardButton('Next >', callback_data=f'osu_topscores_next@{page}@{limit}@{osuid}@{osumode}')
-    if len(res_scores) != 0 and page <= maxpage:
+    if len(res_scores) != 0 and page < maxpage:
         text = await template(message, res_scores, offset, limit, osumode, osu_api)
         if page <= 0:
             markup.add(ButtonCounter, ButtonNext)
