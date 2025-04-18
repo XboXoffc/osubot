@@ -3,7 +3,7 @@ import sqlite3
 
 OSU_GROUPS_DB = config.OSU_GROUPS_DB
 
-async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None, osu_username=None, osu_mode=None, osu_pp=None, osu_rank=None, osu_acc=None, osu_playcount=None, osu_topscore=None):
+async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None, osu_username=None, osu_mode=None, osu_pp=None, osu_rank=None, osu_acc=None, osu_playcount=None, osu_topscore=None, osu_ii=None):
     tg_chat_id = str(tg_chat_id)
     tg_chat_id = tg_chat_id.replace('-', '')
     table_name = "ID" + tg_chat_id
@@ -19,7 +19,8 @@ async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None,
         osu_rank INTEGER,
         osu_acc REAL,
         osu_playcount INTEGER,
-        osu_topscore REAL
+        osu_topscore REAL,
+        osu_ii REAL
         ) """
         
         cursor.execute(query)
@@ -35,6 +36,30 @@ async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None,
 
             cursor.execute(query)
             cursor.execute(query1)
+
+    elif mode == "update":
+        with sqlite3.connect(OSU_GROUPS_DB) as db:
+            cursor = db.cursor()
+            query = f''' SELECT * FROM {table_name} WHERE tg_id={tg_id} AND osu_mode='{osu_mode}' '''
+            cursor.execute(query)
+            old_db = cursor.fetchone()
+
+            query = f''' UPDATE {table_name}
+            SET tg_username='{tg_username}', 
+                osu_id={osu_id},
+                osu_username='{osu_username}',
+                osu_pp={osu_pp},
+                osu_rank={osu_rank},
+                osu_acc={osu_acc},
+                osu_playcount={osu_playcount},
+                osu_topscore={osu_topscore},
+                osu_ii={osu_ii}
+            WHERE tg_id={tg_id} AND osu_mode='{osu_mode}'
+            '''
+            cursor.execute(query)
+        
+        return old_db
+
 
 
 

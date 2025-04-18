@@ -43,8 +43,7 @@ async def main(message, msgsplit, osu_api):
         response = osu_api.profile(username, mode).json()
         pp = response['statistics']['pp']
         playtime = response['statistics']['play_time']//3600
-        expected_playtime = -3.94 + (0.067 * pp) + ((6.78 * 0.000001) * (pp*pp))
-        ii = round(expected_playtime / playtime, 2)
+        ii = await calculate(pp, playtime)
 
         text = f'''{username}'s improvement indicator\n'''
         text += f'''ii: {ii} ({mode})'''
@@ -54,3 +53,9 @@ async def main(message, msgsplit, osu_api):
         await bot.reply_to(message, text, reply_markup=markup)
     else:
         await bot.reply_to(message, 'ERROR: set your nick:\n`su nick <username>`', parse_mode="MARKDOWN")
+
+async def calculate(pp, playtime_hours):
+    expected_playtime = -3.94 + (0.067 * pp) + ((6.78 * 0.000001) * (pp*pp))
+    ii = round(expected_playtime / playtime_hours, 2)
+
+    return ii

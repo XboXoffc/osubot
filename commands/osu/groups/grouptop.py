@@ -2,14 +2,14 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 import config
 import sqlite3
-from commands.osu.groups import template
+from commands.osu.groups import templates
 
 OSU_GROUPS_DB = config.OSU_GROUPS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit, all_modes):
-    all_sorts = ['-pp', '-rank', '-acc', '-pc', '-ts']
+    all_sorts = ['-pp', '-rank', '-acc', '-pc', '-ts', '-ii']
     MembersTop = None
     limit = 15
     osumode = "osu"
@@ -29,6 +29,8 @@ async def main(message, msgsplit, all_modes):
         sortby = 'osu_playcount'
     elif sortby in ('-ts'):
         sortby = 'osu_topscore'
+    elif sortby in ('-ii'):
+        sortby = 'osu_ii'
 
     osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
     if osumode in ("-std", '-osu'):
@@ -47,7 +49,7 @@ async def main(message, msgsplit, all_modes):
         MembersTop = cursor.fetchall()
     
     if MembersTop != None:
-        text = await template.main(message, MembersTop, limit, osumode, sortby.replace('osu_', ''))
+        text = await templates.grouptop(message, MembersTop, limit, osumode, sortby.replace('osu_', ''))
         await bot.reply_to(message, text, parse_mode="MARKDOWN", link_preview_options=types.LinkPreviewOptions(True))
     elif MembersTop == None:
         await bot.reply_to(message, "ERROR: no result in sql for any reason")

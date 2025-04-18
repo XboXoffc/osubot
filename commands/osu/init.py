@@ -2,7 +2,7 @@ from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import config
 from commands.osu import osuapi, osuhelp, botinit, ii, nick, avatar, profile, skin, recent, topscores
-from commands.osu.groups import grouptop
+from commands.osu.groups import grouptop, update
 
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
@@ -40,6 +40,9 @@ async def main(message, osu_api):
     ###  group top
     elif flag in ['chat', 'c', 'с']:
         await grouptop.main(message, msgsplit, all_modes)
+    ###  update
+    elif flag in ['update', 'up', 'гз']:
+        await update.main(message, msgsplit, all_modes, osu_api)
     ###  avatar
     elif flag in ['avatar']:
         await avatar.main(message, msgsplit, osu_api)

@@ -36,12 +36,12 @@ async def main(message, msgsplit, all_modes, osu_api):
                     skinid = i[2]
                     break
         if username != None:
+            from_db = True
             if message.reply_to_message:
                 skin_username = message.reply_to_message.from_user.first_name
             else:
                 skin_username = message.from_user.first_name
             button_for_skin = types.InlineKeyboardButton(f'''{skin_username}'s skin''', callback_data=f'osu_skin_view@{skinid}')
-            from_db = True
 
     osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
     if osumode in ("-std", '-osu'):
@@ -61,6 +61,7 @@ async def main(message, msgsplit, all_modes, osu_api):
             markup.add(button1)
             if 'button_for_skin' in locals():
                 markup.add(button_for_skin)
+            text += f"""[osu!Skills](https://osuskills.com/user/{response['username']}) | [osu!track](https://ameobea.me/osutrack/user/{response['username']})\n"""
             text += f"""ID: {response['id']}\n"""
             text += f"""Name: [{response['username']} ({osumode})]\n"""
             text += f"""Global rank: #{response['statistics']['global_rank']}\n"""
