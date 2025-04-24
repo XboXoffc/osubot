@@ -4,6 +4,7 @@ import asyncio
 import config
 import sqlite3
 from commands import other
+from commands.osu.calculator import pp as pp_cal
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -76,9 +77,6 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
     buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
     if len(recent_res) != 0:
-        #if isinline:
-        #    await bot.delete_message(delchatid, delmsgid)
-
         text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/users/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
 
         artist_title = f'''{recent_res['beatmapset']['artist']} - {recent_res['beatmapset']['title']}'''
@@ -100,6 +98,9 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
 
         text += f'''Score: {recent_res['classic_total_score']} | Combo: {recent_res['max_combo']}/{beatmap_res['max_combo']} | Accuracy: {round(recent_res['accuracy']*100, 2)}%\n'''
         
+
+        pps = await pp_cal.main(recent_res['beatmapset']['id'])
+        print(pps)
         if isinstance(recent_res['pp'], (int, float)):
             pp = round(recent_res['pp'], 2)
         else:
