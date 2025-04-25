@@ -14,9 +14,9 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     text = ''
     osuuser=None
     allflags = ['-offset', '-off']
-    user_res = {}
-    recent_res = {}
-    beatmap_res = {}
+    user_res = None
+    recent_res = None
+    beatmap_res = None
     if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
         response = osu_api.profile(msgsplit[1]).json()
         osuid = response['id']
@@ -64,9 +64,22 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     
     if osuid != None:
         try:
-            recent_res = osu_api.user_scores(osuid, 'recent', mode=osumode, offset=offset, include_fails='1').json()[0]
-            beatmap_res = osu_api.beatmap(recent_res['beatmap']['id']).json()
-            user_res = osu_api.profile(osuid, mode=osumode, use_id=True).json()
+            while type(recent_res) != list:
+                recent_res = osu_api.user_scores(osuid, 'recent', mode=osumode, offset=offset, include_fails='1').json()
+                await asyncio.sleep(0.1)
+
+            if len(recent_res) != 0:
+                recent_res = recent_res[0]
+            else:
+                recent_res == None
+
+            while type(beatmap_res) != dict and recent_res != None and type(recent_res) != list:
+                beatmap_res = osu_api.beatmap(recent_res['beatmap']['id']).json()
+                await asyncio.sleep(0.1)
+
+            while type(user_res) != dict:
+                user_res = osu_api.profile(osuid, mode=osumode, use_id=True).json()
+                await asyncio.sleep(0.1)
         except:
             pass
     else:
@@ -76,7 +89,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     markup = types.InlineKeyboardMarkup()
     buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
     buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
-    if len(recent_res) != 0:
+    if recent_res != None and beatmap_res != None and user_res != None:
         text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/users/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
 
         artist_title = f'''{recent_res['beatmapset']['artist']} - {recent_res['beatmapset']['title']}'''
@@ -98,28 +111,35 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
 
         text += f'''Score: {recent_res['classic_total_score']} | Combo: {recent_res['max_combo']}/{beatmap_res['max_combo']} | Accuracy: {round(recent_res['accuracy']*100, 2)}%\n'''
         
-
-        pps = await pp_cal.main(recent_res['beatmapset']['id'])
-        print(pps)
-        if isinstance(recent_res['pp'], (int, float)):
-            pp = round(recent_res['pp'], 2)
-        else:
-            pp = 'no pp'
-        text += f'''PP: {pp}\n'''
-
         hits = ['great', 'ok', 'meh', 'miss']
         great = ok = meh = miss = '0'
         for hit in hits:
             value = recent_res['statistics'].get(hit, '0')
             match hit:
                 case 'great':
-                    great = str(value)
+                    great = value
                 case 'ok':
-                    ok = str(value)
+                    ok = value
                 case 'meh':
-                    meh = str(value)
+                    meh = value
                 case 'miss':
-                    miss = str(value)
+                    miss = value
+        lazer = True
+        mods = recent_res['mods']
+        accuracy = recent_res['accuracy'] * 100
+        combo = recent_res['max_combo']
+        pps = await pp_cal.main(recent_res['beatmap']['id'], lazer=lazer, accuracy=accuracy, combo=combo, n300=great, n100=ok, n50=meh, misses=miss)
+        if isinstance(recent_res['pp'], (int, float)):
+            pp = round(recent_res['pp'], 2)
+        else:
+            pp = str(round(pps['if_rank'], 2)) + '(if rank)'
+        pp_fc = round(pps['if_fc'], 2)
+        pp_ss = round(pps['if_ss'], 2)
+        pp_99 = round(pps['if_99'], 2)
+        pp_98 = round(pps['if_98'], 2)
+        pp_97 = round(pps['if_97'], 2)
+        text += f'''*PP:* {pp} *FC:* {pp_fc} *SS:* {pp_ss}\n'''
+        text += f'''*99%:* {pp_99} *98%:* {pp_98} *97%:* {pp_97}\n'''
         text += f'''*300*: {great}  *100*: {ok}  *50*: {meh}  *Miss*:{miss}\n'''
 
         rank = recent_res['rank'] if recent_res['passed'] else 'F'
@@ -137,10 +157,13 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         
         markup.add(buttonNext, buttonPrev)
         if isinline:
-            await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
+            try:
+                await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
+            except:
+                pass
         else:
             await bot.reply_to(message, text, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
-    elif len(recent_res) == 0 and osuid != None:
+    elif type(recent_res) != dict and osuid != None:
         text = f'ERROR: no recent scores for 24 hours\noffset = {offset}'
         if isinline:
             markup.add(buttonNext)
