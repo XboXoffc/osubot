@@ -61,27 +61,32 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     except:
         offset = '0'
 
-    
     if osuid != None:
-        try:
-            while type(recent_res) != list:
+        while recent_res == None:
+            try:
                 recent_res = osu_api.user_scores(osuid, 'recent', mode=osumode, offset=offset, include_fails='1').json()
-                await asyncio.sleep(0.1)
-
-            if len(recent_res) != 0:
-                recent_res = recent_res[0]
-            else:
+            except:
                 recent_res == None
+            await asyncio.sleep(0.1)
 
-            while type(beatmap_res) != dict and recent_res != None and type(recent_res) != list:
-                beatmap_res = osu_api.beatmap(recent_res['beatmap']['id']).json()
-                await asyncio.sleep(0.1)
-
-            while type(user_res) != dict:
-                user_res = osu_api.profile(osuid, mode=osumode, use_id=True).json()
-                await asyncio.sleep(0.1)
+        try:
+            recent_res = recent_res[0]
         except:
-            pass
+            recent_res == None
+
+        while beatmap_res == None and len(recent_res) != 0:
+            try:
+                beatmap_res = osu_api.beatmap(recent_res['beatmap']['id']).json()
+            except:
+                beatmap_res == None
+            await asyncio.sleep(0.1)
+
+        while user_res == None:
+            try:
+                user_res = osu_api.profile(osuid, mode=osumode, use_id=True).json()
+            except:
+                user_res == None
+            await asyncio.sleep(0.1)
     else:
         text = 'ERROR: set nick in bot with `su nick`'
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
@@ -89,7 +94,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     markup = types.InlineKeyboardMarkup()
     buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
     buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
-    if recent_res != None and beatmap_res != None and user_res != None:
+    if type(recent_res) == dict and type(beatmap_res) == dict and type(user_res) == dict:
         text += f'''[{recent_res['user']['username']}](https://osu.ppy.sh/users/{recent_res['user']['id']}) (Global: #{user_res['statistics']['global_rank']}, {user_res['country_code']}: #{user_res['statistics']['rank']['country']})\n'''
 
         artist_title = f'''{recent_res['beatmapset']['artist']} - {recent_res['beatmapset']['title']}'''
@@ -128,7 +133,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         mods = recent_res['mods']
         accuracy = recent_res['accuracy'] * 100
         combo = recent_res['max_combo']
-        pps = await pp_cal.main(recent_res['beatmap']['id'], lazer=lazer, accuracy=accuracy, combo=combo, n300=great, n100=ok, n50=meh, misses=miss)
+        pps = await pp_cal.main(recent_res['beatmap']['id'], lazer=lazer, accuracy=accuracy, combo=combo, n300=int(great), n100=int(ok), n50=int(meh), misses=int(miss))
         if isinstance(recent_res['pp'], (int, float)):
             pp = round(recent_res['pp'], 2)
         else:
@@ -160,7 +165,9 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
             try:
                 await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
             except:
-                pass
+                temp = await bot.reply_to(botcall.message, 'no updates (offset = 0)')
+                await asyncio.sleep(10)
+                await bot.delete_message(temp.chat.id, temp.id)
         else:
             await bot.reply_to(message, text, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
     elif type(recent_res) != dict and osuid != None:
