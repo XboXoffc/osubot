@@ -98,7 +98,7 @@ async def recent(recent, beatmap, user, offset):
     pp_fc, pp_ss, pp_99, pp_98, pp_97 = round(CalculatedPP['if_fc'], 2), round(CalculatedPP['if_ss'], 2), round(CalculatedPP['if_99'], 2), round(CalculatedPP['if_98'], 2), round(CalculatedPP['if_97'], 2)
 
     datetime = other.time(recentPassTime)
-    datetime = f'{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'
+    datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
     text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank})\n'''
