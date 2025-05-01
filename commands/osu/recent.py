@@ -104,13 +104,15 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         text += f'''[[{recent_res['beatmap']['version']}, {recent_res['beatmap']['difficulty_rating']}✩]] by [{recent_res['beatmapset']['creator']}] '''
         text += f'''<{recent_res['beatmap']['status']}>\n'''
 
-        beatmapmods = ''.join(recent_res['mods'][i]['acronym'] for i in range(len(recent_res['mods'])))
+        mods = ''.join(recent_res['mods'][i]['acronym'] for i in range(len(recent_res['mods'])))
+        if mods != '':
+            mods = f'| +{mods}'
         beatmapmin = beatmap_res['total_length']//60
         beatmapsec = str(beatmap_res['total_length']%60)
         if len(beatmapsec) == 1:
             beatmapsec = f"""0{beatmapsec}"""
         beatmaptime = f'''{beatmapmin}:{beatmapsec}'''
-        text += f'''{beatmaptime} | AR:{beatmap_res['ar']} OD:{beatmap_res['accuracy']} CS:{beatmap_res['cs']} HP:{beatmap_res['drain']}  {round(beatmap_res['bpm'])}BPM | +{beatmapmods}\n'''
+        text += f'''{beatmaptime} | AR:{beatmap_res['ar']} OD:{beatmap_res['accuracy']} CS:{beatmap_res['cs']} HP:{beatmap_res['drain']}  {round(beatmap_res['bpm'])}BPM {mods}\n'''
 
         text += f'''\n'''
 
@@ -130,10 +132,9 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
                 case 'miss':
                     miss = value
         lazer = True
-        mods = recent_res['mods']
         accuracy = recent_res['accuracy'] * 100
         combo = recent_res['max_combo']
-        pps = await pp_cal.main(recent_res['beatmap']['id'], lazer=lazer, accuracy=accuracy, combo=combo, n300=int(great), n100=int(ok), n50=int(meh), misses=int(miss))
+        pps = await pp_cal.main(recent_res['beatmap']['id'], mods=recent_res['mods'], lazer=lazer, accuracy=accuracy, combo=combo, n300=int(great), n100=int(ok), n50=int(meh), misses=int(miss))
         if isinstance(recent_res['pp'], (int, float)):
             pp = round(recent_res['pp'], 2)
         else:
@@ -143,7 +144,13 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         pp_99 = round(pps['if_99'], 2)
         pp_98 = round(pps['if_98'], 2)
         pp_97 = round(pps['if_97'], 2)
-        text += f'''*PP:* {pp} *FC:* {pp_fc} *SS:* {pp_ss}\n'''
+        textpp = f'*PP:* {pp}'
+        textfc = f'*FC:* {pp_fc}'
+        textss = f'*SS:* {pp_ss}'
+        if recent_res['max_combo'] == beatmap_res['max_combo']:
+            text += f'''{textpp} {textss}\n'''
+        else:
+            text += f'''{textpp} {textfc} {textss}\n'''
         text += f'''*99%:* {pp_99} *98%:* {pp_98} *97%:* {pp_97}\n'''
         text += f'''*300*: {great}  *100*: {ok}  *50*: {meh}  *Miss*:{miss}\n'''
 

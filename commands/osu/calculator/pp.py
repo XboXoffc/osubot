@@ -41,8 +41,11 @@ async def main(map_id, mode=None, mods=None, lazer=None, clockrate=None,
             mods = mods,
             lazer = lazer,
             clock_rate = clockrate,
-            accuracy = 100
+            accuracy = 100,
+            n300 = n300 + n100 + n50 + misses
         ).calculate(beatmap)
+        print(attrs_ss)
+        print(mods)
 
         attrs_99 = rosu.Performance(
             mods = mods,
