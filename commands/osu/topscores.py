@@ -1,6 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 import config
+import asyncio
 from commands import other
 import sqlite3
 import math
@@ -12,10 +13,15 @@ bot = AsyncTeleBot(TOKEN)
 
 async def template(message, res_scores, offset, limit, osumode, osu_api):
     scores_limit = len(res_scores)
+    res_beatmap = None
     text = ''
     text += f'''[{res_scores[0]['user']['username']}'s] top scores [[{osumode}]]:\n'''
     for i in range(scores_limit):
-        res_beatmap = osu_api.beatmap(res_scores[i]['beatmap']['id']).json()
+        while res_beatmap == None:
+            try:
+                res_beatmap = osu_api.beatmap(res_scores[i]['beatmap']['id']).json()
+            except:
+                res_beatmap = None
 
         text += f'''#{i+offset+1} '''
         artist_title = f'''{res_scores[i]['beatmapset']['artist']} - {res_scores[i]['beatmapset']['title']}'''
@@ -119,7 +125,11 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
     maxpage = math.ceil(200/limit)
 
     if osuid != None:
-        res_scores = osu_api.user_scores(osuid, 'best', mode=osumode, limit=str(limit), offset=str(offset)).json()
+        while res_scores == None:
+            try:
+                res_scores = osu_api.user_scores(osuid, 'best', mode=osumode, limit=str(limit), offset=str(offset)).json()
+            except:
+                res_scores = None
     else:
         text = 'ERROR: set nick in bot with `su nick`'
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
@@ -144,9 +154,8 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
         try:
             await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', link_preview_options=types.LinkPreviewOptions(True), reply_markup=markup)
         except:
-            delmarkup = types.InlineKeyboardMarkup()
-            delbutton = types.InlineKeyboardButton('Delete', callback_data='osu_del')
-            delmarkup.add(delbutton)
-            await bot.reply_to(message, f'ERROR: no updates or max page reached, {botcall.from_user.first_name}(@{botcall.from_user.username})', reply_markup=delmarkup)
+            temp = await bot.reply_to(message, f'ERROR: no updates or max page reached, {botcall.from_user.first_name}(@{botcall.from_user.username})')
+            await asyncio.sleep(10)
+            await bot.delete_message(temp.chat.id, temp.id)
     else:
         await bot.reply_to(message, text, parse_mode='MARKDOWN', link_preview_options=types.LinkPreviewOptions(True), reply_markup=markup)

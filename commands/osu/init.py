@@ -1,7 +1,8 @@
 from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import config
-from commands.osu import osuapi, osuhelp, botinit, ii, nick, avatar, profile, skin, recent, topscores
+from commands.osu import osuapi, osuhelp, botinit, ii, nick, avatar, profile, skin, topscores
+from commands.osu.recent import recent
 from commands.osu.groups import grouptop, update
 
 TOKEN = config.TG_TOKEN
