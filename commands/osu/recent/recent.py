@@ -20,9 +20,14 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     beatmap_res = None
     if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
         response = osu_api.profile(msgsplit[1]).json()
-        osuid = response['id']
-        osuuser = response['username']
-        osumode = response['playmode']
+        try:
+            osuid = response['id']
+            osuuser = response['username']
+            osumode = response['playmode']
+        except:
+            osuid = None
+            osuuser = None
+            osumode = None
     elif osuid == None and not isinline:
         with sqlite3.connect(OSU_USERS_DB) as db:
             if message.reply_to_message:
@@ -97,7 +102,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     buttonUpdate = types.InlineKeyboardButton(f'{int(offset)+1}/{len(recent_res_raw)}', callback_data=f'osu_recent_update@{offset}@{osuid}@{osumode}')
     buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
     if type(recent_res) == dict and type(beatmap_res) == dict and type(user_res) == dict:
-        text = await templates.recent(recent_res, beatmap_res, user_res, offset)
+        text = await templates.main(osumode, recent_res, beatmap_res, user_res, offset)
         markup.add(buttonNext, buttonUpdate, buttonPrev)
         if isinline:
             while not isSended:

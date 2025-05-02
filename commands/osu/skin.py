@@ -42,7 +42,6 @@ async def main(message, msgsplit):
                 for skin_db in cursor.fetchall():
                     if tg_id == skin_db[0]:
                         src = OSU_SKIN_PATH + skin_db[1]
-                        print(src)
                         os.remove(src)
                         skin_exist = True
                         break
