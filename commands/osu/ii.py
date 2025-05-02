@@ -52,7 +52,7 @@ async def main(message, msgsplit, all_modes, osu_api):
         mode = 'mania'
     elif mode == '-t':
         mode = 'taiko'
-    elif mode is ('-c' or '-ctb' or '-catch'):
+    elif mode in ('-c' or '-ctb' or '-catch'):
         mode = 'fruits'
     
     if username != None and mode != None:
