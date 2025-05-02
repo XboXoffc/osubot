@@ -2,11 +2,13 @@ import requests
 import config
 import asyncio
 import os.path
+import os
 
 OSU_MAP_PATH = config.OSU_MAP_PATH 
 
 async def main(map_id):
     base_url = 'https://osu.ppy.sh/osu'
+    path_to_map = f'{OSU_MAP_PATH}{map_id}.osu'
     try:
         mapdata = requests.get(f'{base_url}/{map_id}')
     except:
@@ -14,12 +16,10 @@ async def main(map_id):
 
     if mapdata != None:
         mapdata = mapdata.text
-        try:
-            with open(f'{OSU_MAP_PATH}{map_id}.osu', 'x') as file:
-                file.write(mapdata)
-        except:
-            with open(f'{OSU_MAP_PATH}{map_id}.osu', 'w') as file:
-                file.write(mapdata)
+        if os.path.exists(path_to_map):
+            os.remove(path_to_map)
+        with open(path_to_map, 'x') as file:
+            file.write(mapdata)
     elif mapdata == None:
         await main(map_id)
 
