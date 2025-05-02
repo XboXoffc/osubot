@@ -49,7 +49,7 @@ async def main(message, osu_api):
         await avatar.main(message, msgsplit, osu_api)
     ###  ii
     elif flag in ['ii', 'шш']:
-        await ii.main(message, msgsplit, osu_api)
+        await ii.main(message, msgsplit, all_modes, osu_api)
     ###  init
     elif flag in ['init']:
         await botinit.main(message)
