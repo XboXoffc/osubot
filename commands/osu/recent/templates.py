@@ -65,6 +65,8 @@ async def standart(recent, beatmap, user, offset):
     beatmapsetArtist = beatmapsetArtist.replace(']', '')
     beatmapsetTitle = beatmapsetTitle.replace('[', '')
     beatmapsetTitle = beatmapsetTitle.replace(']', '')
+    beatmapVER = beatmapVER.replace('[', '')
+    beatmapVER = beatmapVER.replace(']', '')
 
     beatmapMods = ''.join(recentModsRaw[i]['acronym'] for i in range(len(recentModsRaw)))
     if beatmapMods != '':
@@ -111,7 +113,7 @@ async def standart(recent, beatmap, user, offset):
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
-    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank})\n'''
+    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[osu]]\n'''
     text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | AR:{beatmapAR} OD:{beatmapOD} CS:{beatmapCS} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
@@ -187,6 +189,8 @@ async def mania(recent, beatmap, user, offset):
     beatmapsetArtist = beatmapsetArtist.replace(']', '')
     beatmapsetTitle = beatmapsetTitle.replace('[', '')
     beatmapsetTitle = beatmapsetTitle.replace(']', '')
+    beatmapVER = beatmapVER.replace('[', '')
+    beatmapVER = beatmapVER.replace(']', '')
 
     beatmapMods = ''.join(recentModsRaw[i]['acronym'] for i in range(len(recentModsRaw)))
     if beatmapMods != '':
@@ -237,7 +241,7 @@ async def mania(recent, beatmap, user, offset):
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
-    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank})\n'''
+    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[mania]]\n'''
     text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | Keys:{beatmapCS} AR:{beatmapAR} OD:{beatmapOD} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
@@ -311,6 +315,8 @@ async def taiko(recent, beatmap, user, offset):
     beatmapsetArtist = beatmapsetArtist.replace(']', '')
     beatmapsetTitle = beatmapsetTitle.replace('[', '')
     beatmapsetTitle = beatmapsetTitle.replace(']', '')
+    beatmapVER = beatmapVER.replace('[', '')
+    beatmapVER = beatmapVER.replace(']', '')
 
     beatmapMods = ''.join(recentModsRaw[i]['acronym'] for i in range(len(recentModsRaw)))
     if beatmapMods != '':
@@ -355,7 +361,7 @@ async def taiko(recent, beatmap, user, offset):
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
-    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank})\n'''
+    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[taiko]]\n'''
     text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | OD:{beatmapOD} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
@@ -422,6 +428,8 @@ async def fruits(recent, beatmap, user, offset):
     beatmapsetArtist = beatmapsetArtist.replace(']', '')
     beatmapsetTitle = beatmapsetTitle.replace('[', '')
     beatmapsetTitle = beatmapsetTitle.replace(']', '')
+    beatmapVER = beatmapVER.replace('[', '')
+    beatmapVER = beatmapVER.replace(']', '')
 
     beatmapMods = ''.join(recentModsRaw[i]['acronym'] for i in range(len(recentModsRaw)))
     if beatmapMods != '':
@@ -471,7 +479,7 @@ async def fruits(recent, beatmap, user, offset):
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
-    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank})\n'''
+    text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[fruits]]\n'''
     text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | AR:{beatmapAR} OD:{beatmapOD} CS:{beatmapCS} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
