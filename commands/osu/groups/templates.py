@@ -66,34 +66,53 @@ async def update(message, old_db, new_db):
 
     text += f'''[{osu_username}'s]({base_url}/users/{osu_id}) update in {message.chat.id} ({osu_mode}):\n'''
 
-    dif_pp = new_db[5] - old_db[5]
+    if old_db[5] != None:
+        dif_pp = new_db[5] - old_db[5]
+    else:
+        dif_pp = new_db[5]
     if dif_pp >= 0:
         dif_pp = '+' + str(dif_pp)
     text += f'''pp: {new_db[5]}({dif_pp})\n'''
 
-    dif_rank = new_db[6] - old_db[6]
+    if old_db[6] != None:
+        dif_rank = new_db[6] - old_db[6]
+    else:
+        dif_rank = new_db[6]
     if dif_rank >= 0:
         dif_rank = '+' + str(dif_rank)
     text += f'''rank: {new_db[6]}({dif_rank})\n'''
 
-    dif_acc = new_db[7] - old_db[7]
+    if old_db[7] != None:
+        dif_acc = new_db[7] - old_db[7]
+    else:
+        dif_acc = new_db[7]
     if dif_acc >= 0:
         dif_acc = '+' + str(round(dif_acc, 2))
     text += f'''acc: {round(new_db[7], 2)}({dif_acc})\n'''
 
-    dif_playcount = new_db[8] - old_db[8]
+    if old_db[8] != None:
+        dif_playcount = new_db[8] - old_db[8]
+    else:
+        dif_playcount = new_db[8]
     if dif_playcount >= 0:
         dif_playcount = '+' + str(dif_playcount)
     text += f'''playcount: {new_db[8]}({dif_playcount})\n'''
 
-    dif_topscore = new_db[9] - old_db[9]
+    if old_db[9] != None:
+        dif_topscore = new_db[9] - old_db[9]
+    else:
+        dif_topscore = new_db[9]
     if dif_topscore >= 0:
         dif_topscore = '+' + str(dif_topscore)
     text += f'''topscore: {new_db[9]}({dif_topscore})\n'''
 
-    dif_ii = new_db[10] - old_db[10]
+    if old_db[10] != None:
+        dif_ii = new_db[10] - old_db[10]
+    else:
+        dif_ii = new_db[10]
     if dif_ii >= 0:
         dif_ii = '+' + str(dif_ii)
     text += f'''ii: {new_db[10]}({dif_ii})\n'''
+
 
     return text

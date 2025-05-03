@@ -8,9 +8,14 @@ TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit, all_modes, osu_api):
+    response = None
     if msgsplit[1] != '$empty$':
         osu_username = msgsplit[1]
-        response = osu_api.profile(osu_username).json()
+        while response == None:
+            try:
+                response = osu_api.profile(osu_username).json()
+            except:
+                response = None
     else:
         await bot.reply_to(message, "ERROR: write username `\nsu nick <your username>`", parse_mode='MARKDOWN')
 
