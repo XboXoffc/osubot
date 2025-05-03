@@ -58,6 +58,12 @@ async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None,
             '''
             cursor.execute(query)
         
+        if old_db == None:
+            old_db = []
+            for i in range(11):
+                old_db.append(0)
+
+
         return old_db
 
 
