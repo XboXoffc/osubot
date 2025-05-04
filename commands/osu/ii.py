@@ -10,7 +10,7 @@ bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit, all_modes, osu_api):
     username = None
-    mode = None
+    mode = 'osu'
     response = None
 
     if message.reply_to_message:
@@ -29,7 +29,6 @@ async def main(message, msgsplit, all_modes, osu_api):
             mode = response['playmode']
         except:
             username = None
-            mode = None
     else:
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
@@ -44,7 +43,7 @@ async def main(message, msgsplit, all_modes, osu_api):
                 else:
                     username = None
                     mode = None
-
+    
     mode = next((m for m in msgsplit if m in set(all_modes)), mode)
     if mode == "-std":
         mode = 'osu'
