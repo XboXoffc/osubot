@@ -9,6 +9,7 @@ bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit, all_modes, osu_api):
     response = None
+    osu_mode = None
     if msgsplit[1] != '$empty$':
         osu_username = msgsplit[1]
         while response == None:
@@ -21,10 +22,12 @@ async def main(message, msgsplit, all_modes, osu_api):
 
     if msgsplit[2] != '$empty$' and msgsplit[2] in all_modes:
         osu_mode = msgsplit[2]
-    else:
+    elif msgsplit[2] == '$empty$' and 'error' not in response:
         osu_mode = response['playmode']
+    else:
+        await bot.reply_to(message, "ERROR: username is not exists")
 
-    try:
+    if osu_mode != None:
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
             osu_id = response['id']
@@ -33,5 +36,3 @@ async def main(message, msgsplit, all_modes, osu_api):
             query = f""" REPLACE INTO osu_users (tg_id, tg_username, osu_id, osu_username, osu_mode) VALUES({tg_id}, '{tg_username}', {osu_id}, '{osu_username}', '{osu_mode}') """
             cursor.execute(query)
         await bot.reply_to(message, f'your username set, *{osu_username}*\nmode: *{osu_mode}*', parse_mode='MARKDOWN')
-    except:
-        await bot.reply_to(message, "ERROR: username is not exists")

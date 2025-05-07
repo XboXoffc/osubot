@@ -35,26 +35,26 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
             elif not message.reply_to_message:
                 tgid = message.from_user.id
             cursor = db.cursor()
-            queue = ''' SELECT tg_id, osu_id, osu_mode, osu_username FROM osu_users '''
+            queue = f''' SELECT tg_id, osu_id, osu_mode, osu_username FROM osu_users WHERE tg_id={tgid}'''
             cursor.execute(queue)
-            dbresult = cursor.fetchall()
-            for users in dbresult:
-                if tgid == users[0]:
-                    osuuser = users[3]
-                    osuid = users[1]
-                    osumode = users[2]
-                    break
+            dbresult = cursor.fetchone()
+            if dbresult != None:
+                osuuser = dbresult[3]
+                osuid = dbresult[1]
+                osumode = dbresult[2]
     
     
-    osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
-    if osumode in ("-std", '-osu'):
-        osumode = 'osu'
-    elif osumode in ('-m', '-mania'):
-        osumode = 'mania'
-    elif osumode in ('-t', '-taiko'):
-        osumode = 'taiko'
-    elif osumode in ('-c' or '-ctb' or '-catch'):
-        osumode = 'fruits'
+    if osumode != None:
+        osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
+        if osumode in ("-std", '-osu'):
+            osumode = 'osu'
+        elif osumode in ('-m', '-mania'):
+            osumode = 'mania'
+        elif osumode in ('-t', '-taiko'):
+            osumode = 'taiko'
+        elif osumode in ('-c' or '-ctb' or '-catch'):
+            osumode = 'fruits'
+
 
     if not isinline:
         for i in ['-offset', '-off']:
@@ -66,6 +66,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
             offset = '0'
     except:
         offset = '0'
+
 
     if osuid != None:
         while recent_res_raw == None:
@@ -97,10 +98,14 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
         text = 'ERROR: set nick in bot with `su nick`'
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
 
-    markup = types.InlineKeyboardMarkup()
-    buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
-    buttonUpdate = types.InlineKeyboardButton(f'{int(offset)+1}/{len(recent_res_raw)}', callback_data=f'osu_recent_update@{offset}@{osuid}@{osumode}')
-    buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
+
+    try:
+        markup = types.InlineKeyboardMarkup()
+        buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
+        buttonUpdate = types.InlineKeyboardButton(f'{int(offset)+1}/{len(recent_res_raw)}', callback_data=f'osu_recent_update@{offset}@{osuid}@{osumode}')
+        buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
+    except:
+        pass
     if type(recent_res) == dict and type(beatmap_res) == dict and type(user_res) == dict:
         text = await templates.main(osumode, recent_res, beatmap_res, user_res, offset)
         markup.add(buttonNext, buttonUpdate, buttonPrev)
