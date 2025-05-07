@@ -13,7 +13,7 @@ bot = AsyncTeleBot(TOKEN)
 async def main(message, msgsplit):
         # save skin
         if message.document:
-            if message.document.file_name.split('.')[-1] == 'osk' and message.document.file_size <= 104857600:
+            if message.document.file_name.split('.')[-1] == 'osk' and message.document.file_size <= 20 * 1024 * 1024:
                 tg_id = message.from_user.id
                 file_info = await bot.get_file(message.document.file_id)
                 dowloaded_file = await bot.download_file(file_info.file_path)
@@ -30,7 +30,7 @@ async def main(message, msgsplit):
                     cursor.execute(query)
                 await bot.reply_to(message, 'skin saved')
             else:
-                await bot.reply_to(message, 'ERROR: file must be .osk and not over 50MB')
+                await bot.reply_to(message, 'ERROR: file must be .osk and not over 20MB(all questions to TG API)')
 
         # deleting skin
         elif msgsplit[1] in ['-del', '-d', 'del', 'd']:
