@@ -43,7 +43,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
                 osuid = dbresult[1]
                 osumode = dbresult[2]
     
-    
+
     if osumode != None:
         osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
         if osumode in ("-std", '-osu'):
@@ -102,20 +102,20 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     try:
         markup = types.InlineKeyboardMarkup()
         buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
-        buttonUpdate = types.InlineKeyboardButton(f'{int(offset)+1}/{len(recent_res_raw)}', callback_data=f'osu_recent_update@{offset}@{osuid}@{osumode}')
+        buttonPage = types.InlineKeyboardButton(f'{int(offset)+1}/{len(recent_res_raw)}', callback_data='.')
+        buttonUpdate = types.InlineKeyboardButton('🔄', callback_data=f'osu_recent_update@{offset}@{osuid}@{osumode}')
         buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
     except:
         pass
     if type(recent_res) == dict and type(beatmap_res) == dict and type(user_res) == dict:
         text = await templates.main(osumode, recent_res, beatmap_res, user_res, offset)
+        markup.add(buttonPage)
         markup.add(buttonNext, buttonUpdate, buttonPrev)
         if isinline:
-            while not isSended:
-                try:
-                    await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
-                    isSended = True
-                except:
-                    text += ';'
+            try:
+                await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
+            except:
+                await bot.answer_callback_query(botcall.id, 'no updates')
         else:
             await bot.reply_to(message, text, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
     elif type(recent_res) != dict and osuid != None:

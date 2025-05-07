@@ -35,7 +35,7 @@ async def main(call, osu_api):
             if not issend:
                 await bot.reply_to(call.message, "ERROR: he didn't added skin")
                 
-    elif datasplit[0] in ['osu_recent_prev', 'osu_recent_next'] and call.message.reply_to_message:
+    elif datasplit[0] in ['osu_recent_prev', 'osu_recent_next', 'osu_recent_update'] and call.message.reply_to_message:
         if call.from_user.id == call.message.reply_to_message.from_user.id:
             offset = int(datasplit[1])
             if datasplit[0] == 'osu_recent_prev':
