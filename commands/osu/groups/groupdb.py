@@ -29,13 +29,25 @@ async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None,
         with sqlite3.connect(OSU_GROUPS_DB) as db:
             cursor = db.cursor()
 
-            query = f""" DELETE FROM {table_name} WHERE tg_id={tg_id} AND osu_mode='{osu_mode}' """
-
-            query1 = f""" REPLACE INTO {table_name}(tg_id, tg_username, osu_id, osu_username, osu_mode, osu_pp, osu_rank, osu_acc, osu_playcount)
-                        VALUES({tg_id}, '{tg_username}', {osu_id}, '{osu_username}', '{osu_mode}', {osu_pp}, {osu_rank}, {osu_acc}, {osu_playcount}) """
-
+            query = f""" SELECT * FROM {table_name} WHERE tg_id={tg_id} AND osu_mode='{osu_mode}' """
             cursor.execute(query)
-            cursor.execute(query1)
+            old_db = cursor.fetchone()
+            if old_db != None:
+                query = f''' UPDATE {table_name}
+                SET tg_username='{tg_username}', 
+                    osu_id={osu_id},
+                    osu_username='{osu_username}',
+                    osu_pp={osu_pp},
+                    osu_rank={osu_rank},
+                    osu_acc={osu_acc},
+                    osu_playcount={osu_playcount}
+                WHERE tg_id={tg_id} AND osu_mode='{osu_mode}'
+                '''
+                cursor.execute(query)
+            elif old_db == None:
+                query = f""" REPLACE INTO {table_name}(tg_id, tg_username, osu_id, osu_username, osu_mode, osu_pp, osu_rank, osu_acc, osu_playcount)
+                        VALUES({tg_id}, '{tg_username}', {osu_id}, '{osu_username}', '{osu_mode}', {osu_pp}, {osu_rank}, {osu_acc}, {osu_playcount}) """
+                cursor.execute(query)
 
     elif mode == "update":
         with sqlite3.connect(OSU_GROUPS_DB) as db:
@@ -62,7 +74,6 @@ async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None,
             old_db = []
             for i in range(11):
                 old_db.append(0)
-
 
         return old_db
 
