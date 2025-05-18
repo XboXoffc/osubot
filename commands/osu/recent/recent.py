@@ -19,7 +19,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
     recent_res_raw = None
     beatmap_res = None
     if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
-        response = osu_api.profile(msgsplit[1]).json()
+        response = await osu_api.profile(msgsplit[1])
         try:
             osuid = response['id']
             osuuser = response['username']
@@ -69,46 +69,24 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
 
 
     if osuid != None:
-        while recent_res_raw == None:
-            try:
-                recent_res_raw = osu_api.user_scores(osuid, 'recent', mode=osumode, limit='10000', include_fails='1').json()
-            except:
-                recent_res_raw == None
-            await asyncio.sleep(0.1)
-
-        if int(offset) < len(recent_res_raw):
+        recent_res_raw = await osu_api.user_scores(osuid, 'recent', mode=osumode, limit='10000', include_fails='1')
+        if len(recent_res_raw) > 0:
             recent_res = recent_res_raw[int(offset)]
-        else:
-            recent_res = None
-
-        while beatmap_res == None and recent_res != None:
-            try:
-                beatmap_res = osu_api.beatmap(recent_res['beatmap']['id']).json()
-            except:
-                beatmap_res == None
-            await asyncio.sleep(0.1)
-
-        while user_res == None:
-            try:
-                user_res = osu_api.profile(osuid, mode=osumode, use_id=True).json()
-            except:
-                user_res == None
-            await asyncio.sleep(0.1)
+            beatmap_res = await osu_api.beatmap(recent_res['beatmap']['id'])
+            user_res = await osu_api.profile(osuid, mode=osumode, use_id=True)
     else:
         text = 'ERROR: set nick in bot with `su nick`'
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
 
 
-    try:
-        markup = types.InlineKeyboardMarkup()
-        buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
-        buttonPage = types.InlineKeyboardButton(f'{int(offset)+1}/{len(recent_res_raw)}', callback_data='.')
-        buttonUpdate = types.InlineKeyboardButton('🔄', callback_data=f'osu_recent_update@{offset}@{osuid}@{osumode}')
-        buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
-    except:
-        pass
-    if type(recent_res) == dict and type(beatmap_res) == dict and type(user_res) == dict:
+    markup = types.InlineKeyboardMarkup()
+    buttonNext = types.InlineKeyboardButton('< Next', callback_data=f'osu_recent_next@{offset}@{osuid}@{osumode}')
+    buttonUpdate = types.InlineKeyboardButton('🔄', callback_data=f'osu_recent_update@{offset}@{osuid}@{osumode}')
+    buttonPrev = types.InlineKeyboardButton('Prev >', callback_data=f'osu_recent_prev@{offset}@{osuid}@{osumode}')
+    if recent_res != None:
         text = await templates.main(osumode, recent_res, beatmap_res, user_res, offset)
+
+        buttonPage = types.InlineKeyboardButton(f'{int(offset)+1}/{len(recent_res_raw)}', callback_data='.')
         markup.add(buttonPage)
         markup.add(buttonNext, buttonUpdate, buttonPrev)
         if isinline:
@@ -118,7 +96,7 @@ async def main(message, msgsplit, all_modes, osu_api, offset = '0', isinline=Fal
                 await bot.answer_callback_query(botcall.id, 'no updates')
         else:
             await bot.reply_to(message, text, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
-    elif type(recent_res) != dict and osuid != None:
+    elif recent_res == None and osuid != None:
         text = f'ERROR: no recent scores for 24 hours\noffset = {offset}'
         if isinline:
             markup.add(buttonNext)

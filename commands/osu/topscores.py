@@ -17,11 +17,7 @@ async def template(message, res_scores, offset, limit, osumode, osu_api):
     text = ''
     text += f'''[{res_scores[0]['user']['username']}'s] top scores [[{osumode}]]:\n'''
     for i in range(scores_limit):
-        while res_beatmap == None:
-            try:
-                res_beatmap = osu_api.beatmap(res_scores[i]['beatmap']['id']).json()
-            except:
-                res_beatmap = None
+        res_beatmap = await osu_api.beatmap(res_scores[i]['beatmap']['id'])
 
         text += f'''#{i+offset+1} '''
         artist_title = f'''{res_scores[i]['beatmapset']['artist']} - {res_scores[i]['beatmapset']['title']}'''
@@ -78,7 +74,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
         tgid = message.from_user.id
 
     if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
-        response = osu_api.profile(msgsplit[1]).json()
+        response = await osu_api.profile(msgsplit[1])
         osuid = response['id']
         osuuser = response['username']
         osumode = response['playmode']
@@ -125,11 +121,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
     maxpage = math.ceil(200/limit)
 
     if osuid != None:
-        while res_scores == None:
-            try:
-                res_scores = osu_api.user_scores(osuid, 'best', mode=osumode, limit=str(limit), offset=str(offset)).json()
-            except:
-                res_scores = None
+        res_scores = await osu_api.user_scores(osuid, 'best', mode=osumode, limit=str(limit), offset=str(offset))
     else:
         text = 'ERROR: set nick in bot with `su nick`'
         await bot.reply_to(message, text, parse_mode='MARKDOWN')
@@ -154,8 +146,6 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
         try:
             await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', link_preview_options=types.LinkPreviewOptions(True), reply_markup=markup)
         except:
-            temp = await bot.reply_to(message, f'ERROR: no updates or max page reached, {botcall.from_user.first_name}(@{botcall.from_user.username})')
-            await asyncio.sleep(10)
-            await bot.delete_message(temp.chat.id, temp.id)
+            await bot.answer_callback_query(botcall.id, 'no updates')
     else:
         await bot.reply_to(message, text, parse_mode='MARKDOWN', link_preview_options=types.LinkPreviewOptions(True), reply_markup=markup)

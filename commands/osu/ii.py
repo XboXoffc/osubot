@@ -19,11 +19,7 @@ async def main(message, msgsplit, all_modes, osu_api):
         tgid = message.from_user.id
 
     if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$'):
-        while response == None:
-            try:
-                response = osu_api.profile(msgsplit[1], mode).json()
-            except:
-                response = None
+        response = await osu_api.profile(msgsplit[1], mode)
         try:
             username = response['username']
             mode = response['playmode']
@@ -55,11 +51,7 @@ async def main(message, msgsplit, all_modes, osu_api):
         mode = 'fruits'
     
     if username != None and mode != None:
-        while response == None:
-            try:
-                response = osu_api.profile(username, mode).json()
-            except:
-                response = None
+        response = await osu_api.profile(username, mode)
         pp = response['statistics']['pp']
         playtime = response['statistics']['play_time']//3600
         ii = await calculate(mode, pp, playtime)

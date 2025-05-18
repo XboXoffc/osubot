@@ -55,11 +55,7 @@ async def main(message, msgsplit, all_modes, osu_api):
 
     if username != None:
         try:
-            while response == None:
-                try:
-                    response = osu_api.profile(username, osumode).json()
-                except:
-                    response = None
+            response = await osu_api.profile(username, osumode)
             markup = types.InlineKeyboardMarkup()
             button1 = types.InlineKeyboardButton('profile url', f'https://osu.ppy.sh/users/{response["id"]}')
             markup.add(button1)

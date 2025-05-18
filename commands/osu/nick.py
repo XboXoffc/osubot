@@ -12,11 +12,7 @@ async def main(message, msgsplit, all_modes, osu_api):
     osu_mode = None
     if msgsplit[1] != '$empty$':
         osu_username = msgsplit[1]
-        while response == None:
-            try:
-                response = osu_api.profile(osu_username).json()
-            except:
-                response = None
+        response = await osu_api.profile(osu_username)
     else:
         await bot.reply_to(message, "ERROR: write username `\nsu nick <your username>`", parse_mode='MARKDOWN')
 

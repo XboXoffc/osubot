@@ -52,16 +52,8 @@ async def main(message, msgsplit, all_modes, osu_api):
             osu_mode = 'fruits'
         
         if osu_id != None and osu_mode != None:
-            while profile_res == None:
-                try:
-                    profile_res = osu_api.profile(osu_id, mode=osu_mode, use_id=True).json()
-                except:
-                    profile_res = None
-            while top_res == None:
-                try:
-                    top_res = osu_api.user_scores(osu_id, 'best', mode=osu_mode).json()[0]
-                except:
-                    top_res = None
+            profile_res = await osu_api.profile(osu_id, mode=osu_mode, use_id=True)
+            top_res = await osu_api.user_scores(osu_id, 'best', mode=osu_mode)[0]
         else:
             await bot.reply_to(message, 'ERROR: write username OR set nick `su nick <username>`', parse_mode="MARKDOWN")
 
