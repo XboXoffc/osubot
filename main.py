@@ -2,9 +2,11 @@ from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import requests
 import config
+import validators
 from commands import start, info, support, weather, other
 from commands.osu import init, osucallback
 from commands.osu.osuapistorage import osu_api
+from commands.osu.url import url_handler
 
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
@@ -36,6 +38,9 @@ async def messages(message):
     #Osu!
     elif msgsplit[0] in ['/osu' ,'o' ,'su' , 'osu', 'щ', 'ыг']:
         await init.main(message, osu_api)
+    #For urls
+    elif validators.url(msgsplit[0]):
+        await url_handler.main(message, msgsplit, osu_api)
 
 @bot.callback_query_handler(func=lambda call:True)
 async def Callback(call):
