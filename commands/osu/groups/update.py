@@ -53,7 +53,8 @@ async def main(message, msgsplit, all_modes, osu_api):
         
         if osu_id != None and osu_mode != None:
             profile_res = await osu_api.profile(osu_id, mode=osu_mode, use_id=True)
-            top_res = await osu_api.user_scores(osu_id, 'best', mode=osu_mode)[0]
+            top_res = await osu_api.user_scores(osu_id, 'best', mode=osu_mode)
+            top_res = top_res[0]
         else:
             await bot.reply_to(message, 'ERROR: write username OR set nick `su nick <username>`', parse_mode="MARKDOWN")
 
