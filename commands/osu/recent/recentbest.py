@@ -1,0 +1,86 @@
+from telebot.async_telebot import AsyncTeleBot
+from telebot import types
+import asyncio
+import config
+import sqlite3
+from commands.osu.recent import templates
+
+OSU_USERS_DB = config.OSU_USERS_DB
+TOKEN = config.TG_TOKEN
+bot = AsyncTeleBot(TOKEN)
+
+async def main(message, msgsplit, all_modes, osu_api):
+    allflags = []
+    isinline = False
+    osuid = None
+    osuuser = None
+    osumode = None
+    user_res = None
+    recent_res = None
+    recent_res_raw = None
+    beatmap_res = None
+    recent_top = []
+    offset = None
+    if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
+        response = await osu_api.profile(msgsplit[1])
+        try:
+            osuid = response['id']
+            osuuser = response['username']
+            osumode = response['playmode']
+        except:
+            osuid = None
+            osuuser = None
+            osumode = None
+    elif osuid == None and not isinline:
+        with sqlite3.connect(OSU_USERS_DB) as db:
+            if message.reply_to_message:
+                tgid = message.reply_to_message.from_user.id
+            elif not message.reply_to_message:
+                tgid = message.from_user.id
+            cursor = db.cursor()
+            queue = f''' SELECT tg_id, osu_id, osu_mode, osu_username FROM osu_users WHERE tg_id={tgid}'''
+            cursor.execute(queue)
+            dbresult = cursor.fetchone()
+            if dbresult != None:
+                osuuser = dbresult[3]
+                osuid = dbresult[1]
+                osumode = dbresult[2]
+    
+
+    if osumode != None:
+        osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
+        if osumode in ("-std", '-osu'):
+            osumode = 'osu'
+        elif osumode in ('-m', '-mania'):
+            osumode = 'mania'
+        elif osumode in ('-t', '-taiko'):
+            osumode = 'taiko'
+        elif osumode in ('-c' or '-ctb' or '-catch'):
+            osumode = 'fruits'
+
+
+    if osuid != None:
+        recent_res_raw = await osu_api.user_scores(osuid, 'recent', mode=osumode, limit='10000', include_fails='1')
+        for i in range(len(recent_res_raw)):
+            recent_pp = recent_res_raw[i]['pp']
+            if recent_pp == None:
+                recent_pp = 0
+            recent_top.append(recent_pp)
+        recent_top_index = recent_top.index(max(recent_top))
+        offset = recent_top_index
+        recent_res = recent_res_raw[recent_top_index]
+
+        if recent_res != None:
+            beatmap_res = await osu_api.beatmap(recent_res['beatmap']['id'])
+            user_res = await osu_api.profile(osuid, mode=osumode, use_id=True)
+    else:
+        text = 'ERROR: set nick in bot with `su nick`'
+        await bot.reply_to(message, text, parse_mode='MARKDOWN')
+
+
+    if recent_res != None:
+        text = await templates.main(osumode, recent_res, beatmap_res, user_res, offset)
+        await bot.reply_to(message, text, parse_mode='MARKDOWN', link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
+    elif recent_res == None and osuid != None:
+        text = f'ERROR: no recent scores for 24 hours\noffset = {offset}'
+        await bot.reply_to(message, text)
