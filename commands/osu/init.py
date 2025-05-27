@@ -2,7 +2,7 @@ from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import config
 from commands.osu import osuapi, osuhelp, botinit, ii, nick, avatar, profile, skin, topscores
-from commands.osu.recent import recent, recentbest
+from commands.osu.recent import recent
 from commands.osu.groups import grouptop, update
 
 TOKEN = config.TG_TOKEN
@@ -31,10 +31,10 @@ async def main(message, osu_api):
         await skin.main(message, msgsplit)
     ###  recent
     elif flag in ['r', 'recent', 'к']:
-        await recent.main(message, msgsplit, all_modes, osu_api)
+        await recent.main(message, msgsplit, all_modes, osu_api, 'recent')
     ###  recent best
     elif flag in ['rb', 'recentbest', 'ки']:
-        await recentbest.main(message, msgsplit, all_modes, osu_api)
+        await recent.main(message, msgsplit, all_modes, osu_api, 'recentbest')
     ###  user top scores
     elif flag in ['t', 'top', 'е']:
         await topscores.main(message, msgsplit, all_modes, osu_api)

@@ -4,7 +4,7 @@ import config
 import requests
 import sqlite3
 from commands.osu import init, topscores
-from commands.osu.recent import recent, recentbest
+from commands.osu.recent import recent
 
 OSU_USERS_DB = config.OSU_USERS_DB
 OSU_SKIN_PATH = config.OSU_SKIN_PATH
@@ -50,10 +50,7 @@ async def main(call, osu_api):
             for i in range(3):
                 msgsplit.append('$empty$')
 
-            if datasplit[4] == '0':
-                await recent.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, offset=offset, isinline=True, botcall=call, osuid=datasplit[2], osumode=datasplit[3])
-            elif datasplit[4] == '1':
-                await recentbest.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, offset=offset, isinline=True, botcall=call, osuid=datasplit[2], osumode=datasplit[3])
+            await recent.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, datasplit[4], offset=offset, isinline=True, botcall=call, osuid=datasplit[2], osumode=datasplit[3])
         else:
             await bot.answer_callback_query(call.id, '''you can't change offset here, you can change only own recent''')
 
