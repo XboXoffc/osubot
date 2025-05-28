@@ -21,7 +21,7 @@ async def main(message, osu_api):
     flag = msgsplit[0].lower()
 
     ###  help
-    if flag is ('$empty$' or 'help'):
+    if flag in ['$empty$', 'help']:
         await osuhelp.main(message, msgsplit)
     ###  profile
     elif flag in ['p', 'profile', 'з']:
