@@ -16,8 +16,6 @@ async def main(message, osu_api):
     except:
         msgsplit = message.text.split(' ')
     msgsplit.pop(0)
-    for i in range(3):
-        msgsplit.append('$empty$')
     flag = msgsplit[0].lower()
 
     ###  help

@@ -3,6 +3,7 @@ from telebot import types
 import asyncio
 import config
 import sqlite3
+from commands.other import isempty
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -18,7 +19,7 @@ async def main(message, msgsplit, all_modes, osu_api):
     elif not message.reply_to_message:
         tgid = message.from_user.id
 
-    if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$'):
+    if (not isempty(msgsplit, 1)) and (msgsplit[1] not in all_modes):
         response = await osu_api.profile(msgsplit[1], mode)
         try:
             username = response['username']

@@ -6,6 +6,7 @@ from commands import other
 import sqlite3
 import math
 import time
+from commands.other import isempty
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -73,7 +74,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
     elif not message.reply_to_message:
         tgid = message.from_user.id
 
-    if (msgsplit[1] not in all_modes) and (msgsplit[1] != '$empty$') and (msgsplit[1] not in allflags):
+    if not isempty(msgsplit, 1) and msgsplit[1] not in all_modes and msgsplit[1] not in allflags:
         response = await osu_api.profile(msgsplit[1])
         osuid = response['id']
         osuuser = response['username']

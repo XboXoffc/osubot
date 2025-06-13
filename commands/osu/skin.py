@@ -4,6 +4,7 @@ import config
 import requests
 import sqlite3
 import os
+from commands.other import isempty
 
 OSU_USERS_DB = config.OSU_USERS_DB
 OSU_SKIN_PATH = config.OSU_SKIN_PATH
@@ -33,7 +34,7 @@ async def main(message, msgsplit):
                 await bot.reply_to(message, 'ERROR: file must be .osk and not over 20MB(all questions to TG API)')
 
         # deleting skin
-        elif msgsplit[1] in ['-del', '-d', 'del', 'd']:
+        elif not isempty(msgsplit,1) and msgsplit[1] in ['-del', '-d', 'del', 'd']:
             tg_id = message.from_user.id
             with sqlite3.connect(OSU_USERS_DB) as db:
                 cursor = db.cursor()
@@ -55,7 +56,7 @@ async def main(message, msgsplit):
                     await bot.reply_to(message, '''ERROR: your skin wasn't exists''')
 
         # bot send skin
-        elif msgsplit[1] == "$empty$" and not message.document:
+        elif isempty(msgsplit, 1) and not message.document:
             if message.reply_to_message:
                 tg_id = message.reply_to_message.from_user.id
             else:

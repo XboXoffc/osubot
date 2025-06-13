@@ -2,6 +2,7 @@ from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import config
 import sqlite3
+from commands.other import isempty
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -10,12 +11,11 @@ bot = AsyncTeleBot(TOKEN)
 async def main(message, msgsplit, all_modes, osu_api):
     response = None
     osu_mode = None
-    while msgsplit[-1] == '$empty$':
-        msgsplit.pop(-1)
     if msgsplit[-1] in all_modes:
         osu_mode = msgsplit[-1]
         msgsplit.pop(-1)
-    if msgsplit[1] != '$empty$':
+        
+    if not isempty(msgsplit, 1):
         osu_username = '_'.join(msgsplit[1:])
         response = await osu_api.profile(osu_username)
     else:
