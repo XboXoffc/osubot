@@ -8,9 +8,9 @@ def gtm(message):
     elif message.location:
         print('Пользователь {}, @{}, {} отправил локацию'.format(message.from_user.id, message.from_user.username, message.from_user.first_name))
 
-def isempty(list: list or tuple, index: int):
+def isempty(list1: list or tuple, index: int):
     try:
-        trash = list[index]
+        trash = list1[index]
         return False
     except:
         return True

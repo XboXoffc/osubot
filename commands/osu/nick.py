@@ -10,15 +10,18 @@ bot = AsyncTeleBot(TOKEN)
 async def main(message, msgsplit, all_modes, osu_api):
     response = None
     osu_mode = None
+    while msgsplit[-1] == '$empty$':
+        msgsplit.pop(-1)
+    if msgsplit[-1] in all_modes:
+        osu_mode = msgsplit[-1]
+        msgsplit.pop(-1)
     if msgsplit[1] != '$empty$':
-        osu_username = msgsplit[1]
+        osu_username = '_'.join(msgsplit[1:])
         response = await osu_api.profile(osu_username)
     else:
         await bot.reply_to(message, "ERROR: write username `\nsu nick <your username>`", parse_mode='MARKDOWN')
 
-    if msgsplit[2] != '$empty$' and msgsplit[2] in all_modes:
-        osu_mode = msgsplit[2]
-    elif msgsplit[2] == '$empty$' and 'error' not in response:
+    if 'error' not in response:
         osu_mode = response['playmode']
     else:
         await bot.reply_to(message, "ERROR: username is not exists")
