@@ -3,6 +3,9 @@ from telebot import types
 import config
 import sqlite3
 from commands.osu.groups import templates
+from commands.osu.fetch import mode as modefetch
+from commands.osu.fetch import sort as sortfetch
+
 
 OSU_GROUPS_DB = config.OSU_GROUPS_DB
 TOKEN = config.TG_TOKEN
@@ -18,30 +21,8 @@ async def main(message, msgsplit, all_modes):
     tg_chat_id = tg_chat_id.replace('-', '')
     table_name = "ID" + tg_chat_id
 
-    sortby = next((m for m in msgsplit if m in set(all_sorts)), sortby)
-    if sortby in ('-pp'):
-        sortby = 'osu_pp'
-    elif sortby in ('-rank'):
-        sortby = 'osu_rank'
-    elif sortby in ('-acc'):
-        sortby = 'osu_acc'
-    elif sortby in ('-pc'):
-        sortby = 'osu_playcount'
-    elif sortby in ('-ts'):
-        sortby = 'osu_topscore'
-    elif sortby in ('-ii'):
-        sortby = 'osu_ii'
-
-    osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
-    if osumode in ("-std", '-osu'):
-        osumode = 'osu'
-    elif osumode in ('-m', '-mania'):
-        osumode = 'mania'
-    elif osumode in ('-t', '-taiko'):
-        osumode = 'taiko'
-    elif osumode in ('-c' or '-ctb' or '-catch'):
-        osumode = 'fruits'
-
+    sortby = sortfetch(sortby, msgsplit, all_sorts)
+    osumode = modefetch(osumode, msgsplit, all_modes)
     with sqlite3.connect(OSU_GROUPS_DB) as db:
         cursor = db.cursor()
         query = f""" SELECT * FROM {table_name} WHERE osu_mode='{osumode}' ORDER BY {sortby} DESC NULLS LAST"""

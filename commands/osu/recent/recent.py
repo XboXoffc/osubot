@@ -5,6 +5,8 @@ import config
 import sqlite3
 from commands.osu.recent import templates
 from commands.other import isempty
+from commands.osu.fetch import mode as modefetch
+
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -40,18 +42,6 @@ async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinli
                 osumode = dbresult[2]
     
 
-    if osumode != None:
-        osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
-        if osumode in ("-std", '-osu'):
-            osumode = 'osu'
-        elif osumode in ('-m', '-mania'):
-            osumode = 'mania'
-        elif osumode in ('-t', '-taiko'):
-            osumode = 'taiko'
-        elif osumode in ('-c' or '-ctb' or '-catch'):
-            osumode = 'fruits'
-
-
     if not isinline:
         for i in ['-offset', '-off']:
             if i in msgsplit:
@@ -64,6 +54,7 @@ async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinli
         offset = '0'
 
 
+    osumode =  modefetch(osumode, msgsplit, all_modes)
     if osuid != None:
         recent_res_raw = await osu_api.user_scores(osuid, 'recent', mode=osumode, limit='10000', include_fails='1')
         if int(offset) < len(recent_res_raw):

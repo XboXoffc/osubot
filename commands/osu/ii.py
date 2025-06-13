@@ -4,6 +4,7 @@ import asyncio
 import config
 import sqlite3
 from commands.other import isempty
+from commands.osu.fetch import mode as modefetch
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -41,15 +42,7 @@ async def main(message, msgsplit, all_modes, osu_api):
                     username = None
                     mode = None
     
-    mode = next((m for m in msgsplit if m in set(all_modes)), mode)
-    if mode == "-std":
-        mode = 'osu'
-    elif mode == '-m':
-        mode = 'mania'
-    elif mode == '-t':
-        mode = 'taiko'
-    elif mode in ('-c' or '-ctb' or '-catch'):
-        mode = 'fruits'
+    mode = modefetch(mode, msgsplit, all_modes)
     
     if username != None and mode != None:
         response = await osu_api.profile(username, mode)

@@ -6,6 +6,7 @@ import requests
 import sqlite3
 from commands.osu.groups import groupdb
 from commands.other import isempty
+from commands.osu.fetch import mode as modefetch
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -44,16 +45,7 @@ async def main(message, msgsplit, all_modes, osu_api):
                 skin_username = message.from_user.first_name
             button_for_skin = types.InlineKeyboardButton(f'''{skin_username}'s skin''', callback_data=f'osu_skin_view@{skinid}')
 
-    osumode = next((m for m in msgsplit if m in set(all_modes)), osumode)
-    if osumode in ("-std", '-osu'):
-        osumode = 'osu'
-    elif osumode in ('-m', '-mania'):
-        osumode = 'mania'
-    elif osumode in ('-t', '-taiko'):
-        osumode = 'taiko'
-    elif osumode in ('-c' or '-ctb' or '-catch'):
-        osumode = 'fruits'
-
+    osumode = modefetch(osumode, msgsplit, all_modes)
     if username != None:
         try:
             response = await osu_api.profile(username, osumode)

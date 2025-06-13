@@ -76,7 +76,7 @@ async def main(message, msgsplit):
                 if user_exists:
                     tempmsg = await bot.reply_to(message, 'Skin is uploading...')
                     if message.reply_to_message:
-                        text = f'''@{message.from_user.username}, It's his skin'''
+                        text = f'''@{message.from_user.username}, It's user's skin'''
                     elif not message.reply_to_message:
                         text = f'Your skin, @{message.from_user.username}'
                     with open(f'{OSU_SKIN_PATH}{file_name}', 'rb') as file:
@@ -84,8 +84,8 @@ async def main(message, msgsplit):
                         await bot.delete_message(tempmsg.chat.id, tempmsg.id)
                 elif not user_exists:
                     if message.reply_to_message:
-                        await bot.reply_to(message, "ERROR: he didn't added skin")
+                        await bot.reply_to(message, "ERROR: this user didn't add skin")
                     elif not message.reply_to_message:
                         await bot.reply_to(message, 'ERROR: add your skin via `su sk` with .osk document', parse_mode="MARKDOWN")
         else:
-            await bot.reply_to(message, 'ERROR: send `su sk` with file .osk and not over 50MB', parse_mode='MARKDOWN')
+            await bot.reply_to(message, 'ERROR: send `su sk` with file .osk and not over 20MB', parse_mode='MARKDOWN')
