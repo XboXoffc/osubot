@@ -4,12 +4,12 @@ import requests
 import config
 import validators
 from commands import start, info, support, weather, other
-from commands.osu import init, osucallback
-from commands.osu.osuapistorage import osu_api
+from commands.osu import init, osucallback, osuapi
 from commands.osu.url import url_handler
 
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
+osu_api = osuapi.Osu(config.OSU_CLIENT_ID, config.OSU_CLIENT_SECRET, config.X_API_VERSION)
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'document'])
 async def messages(message):
