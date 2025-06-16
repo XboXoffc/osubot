@@ -4,7 +4,7 @@ import config
 import sqlite3
 from commands.osu.groups import templates, groupdb
 from commands.osu import ii
-from commands.osu.fetch import mode as modefetch
+from commands.osu.utils.fetch import mode as modefetch
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -42,7 +42,7 @@ async def main(message, msgsplit, all_modes, osu_api):
             osu_id = userdata[3]
             osu_mode = userdata[5]
 
-        osu_mode = modefetch(osu_mode, msgsplit, all_modes)
+        osu_mode = await modefetch(osu_mode, msgsplit, all_modes)
         
         if osu_id != None and osu_mode != None:
             profile_res = await osu_api.profile(osu_id, mode=osu_mode, use_id=True)

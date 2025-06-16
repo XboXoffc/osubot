@@ -3,8 +3,8 @@ from telebot import types
 import config
 import sqlite3
 from commands.osu.groups import templates
-from commands.osu.fetch import mode as modefetch
-from commands.osu.fetch import sort as sortfetch
+from commands.osu.utils.fetch import mode as modefetch
+from commands.osu.utils.fetch import sort as sortfetch
 
 
 OSU_GROUPS_DB = config.OSU_GROUPS_DB
@@ -21,8 +21,8 @@ async def main(message, msgsplit, all_modes):
     tg_chat_id = tg_chat_id.replace('-', '')
     table_name = "ID" + tg_chat_id
 
-    sortby = sortfetch(sortby, msgsplit, all_sorts)
-    osumode = modefetch(osumode, msgsplit, all_modes)
+    sortby = await sortfetch(sortby, msgsplit, all_sorts)
+    osumode = await modefetch(osumode, msgsplit, all_modes)
     with sqlite3.connect(OSU_GROUPS_DB) as db:
         cursor = db.cursor()
         query = f""" SELECT * FROM {table_name} WHERE osu_mode='{osumode}' ORDER BY {sortby} DESC NULLS LAST"""

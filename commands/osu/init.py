@@ -4,6 +4,7 @@ import config
 from commands.osu import osuapi, osuhelp, botinit, ii, nick, avatar, profile, skin, topscores
 from commands.osu.recent import recent
 from commands.osu.groups import grouptop, update
+from commands.osu.compare import compare
 
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
@@ -16,10 +17,11 @@ async def main(message, osu_api):
     except:
         msgsplit = message.text.split(' ')
     msgsplit.pop(0)
-    flag = msgsplit[0].lower()
+    if len(msgsplit) > 0:
+        flag = msgsplit[0].lower()
 
     ###  help
-    if flag in ['$empty$', 'help']:
+    if len(msgsplit) == 0 or flag in ['help']:
         await osuhelp.main(message, msgsplit)
     ###  profile
     elif flag in ['p', 'profile', 'з']:
@@ -51,6 +53,10 @@ async def main(message, osu_api):
     ###  ii
     elif flag in ['ii', 'шш']:
         await ii.main(message, msgsplit, all_modes, osu_api)
+    ### compare
+    elif flag in ['compare', 'com', 'сщьзфку', 'сщь']:
+        msgsplit.pop(0)
+        await compare.main(message, msgsplit, all_modes, osu_api)
     ###  init
     elif flag in ['init']:
         await botinit.main(message)

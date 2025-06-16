@@ -7,7 +7,7 @@ import sqlite3
 import math
 import time
 from commands.other import isempty
-from commands.osu.fetch import mode as modefetch
+from commands.osu.utils.fetch import mode as modefetch
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -93,7 +93,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
                     osumode = users[2]
                     break
     
-    osumode = modefetch(osumode, msgsplit, all_modes)
+    osumode = await modefetch(osumode, msgsplit, all_modes)
 
     if not isinline:
         for i in ['-p', '-page']:

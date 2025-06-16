@@ -5,7 +5,7 @@ import config
 import sqlite3
 from commands.osu.recent import templates
 from commands.other import isempty
-from commands.osu.fetch import mode as modefetch
+from commands.osu.utils.fetch import mode as modefetch
 
 
 OSU_USERS_DB = config.OSU_USERS_DB
@@ -54,7 +54,7 @@ async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinli
         offset = '0'
 
 
-    osumode =  modefetch(osumode, msgsplit, all_modes)
+    osumode = await modefetch(osumode, msgsplit, all_modes)
     if osuid != None:
         recent_res_raw = await osu_api.user_scores(osuid, 'recent', mode=osumode, limit='10000', include_fails='1')
         if int(offset) < len(recent_res_raw):
@@ -99,7 +99,7 @@ async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinli
         else:
             await bot.reply_to(message, text, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
     elif recent_res == None and osuid != None:
-        text = f'ERROR: no recent scores for 24 hours\noffset = {offset}'
+        text = f'ERROR: no recent scores for 24 hours({osumode})\noffset = {offset}'
         if len(recent_res_raw) > 0:
             markup.add(buttonPage)
 
