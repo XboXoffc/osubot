@@ -62,8 +62,6 @@ async def main(call, osu_api):
 
         msgsplit = call.message.reply_to_message.text.split(' ')
         msgsplit.pop(0)
-        for i in range(3):
-            msgsplit.append('$empty$')
         
         await topscores.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, isinline=True, limit=limit, page=page, botcall=call, osuid=datasplit[3], osumode=datasplit[4])
     
