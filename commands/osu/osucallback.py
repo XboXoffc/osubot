@@ -47,8 +47,6 @@ async def main(call, osu_api):
 
             msgsplit = call.message.reply_to_message.text.split(' ')
             msgsplit.pop(0)
-            for i in range(3):
-                msgsplit.append('$empty$')
 
             await recent.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, datasplit[4], offset=offset, isinline=True, botcall=call, osuid=datasplit[2], osumode=datasplit[3])
         else:

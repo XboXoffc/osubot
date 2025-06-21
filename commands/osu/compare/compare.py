@@ -29,7 +29,7 @@ async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osu
         tg_reply_id = message.reply_to_message.from_user.id
     else:
         tg_id = message.from_user.id
-        tg_reply_state = None
+        tg_reply_id = None
 
 
     if len(msgsplit) == 0:
