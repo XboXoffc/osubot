@@ -8,7 +8,7 @@ async def mode(osumode:str, msgsplit:list, all_modes:list, send_index=False):
         osumode = 'mania'
     elif osumoderaw in ('-t', '-taiko'):
         osumode = 'taiko'
-    elif osumoderaw in ('-c' or '-ctb' or '-catch'):
+    elif osumoderaw in ('-c', '-ctb', '-catch'):
         osumode = 'fruits'
 
     index = None
@@ -41,7 +41,7 @@ async def user(tg_id, OSU_USERS_DB):
     user = None
     with sqlite3.connect(OSU_USERS_DB) as db:
         cursor = db.cursor()
-        query = f""" SELECT * FROM osu_users WHERE tg_id={tg_id}"""
+        query = f""" SELECT * FROM osu_users WHERE tg_id={tg_id} """
         cursor.execute(query)
         user = cursor.fetchone()
     

@@ -3,6 +3,7 @@ import asyncio
 import config
 import sqlite3
 from commands.other import isempty
+from commands.osu.utils.fetch import mode as modefetch
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -10,11 +11,11 @@ bot = AsyncTeleBot(TOKEN)
 
 async def main(message, msgsplit, all_modes, osu_api):
     response = None
-    osu_mode = None
-    if msgsplit[-1] in all_modes:
-        osu_mode = msgsplit[-1]
-        msgsplit.pop(-1)
-        
+    osu_mode = ''
+    osu_mode, index = await modefetch(osu_mode, msgsplit, all_modes, send_index=True)
+    if index != None:
+        msgsplit.pop(index)
+
     if not isempty(msgsplit, 1):
         osu_username = '_'.join(msgsplit[1:])
         response = await osu_api.profile(osu_username)
@@ -22,11 +23,12 @@ async def main(message, msgsplit, all_modes, osu_api):
         await bot.reply_to(message, "ERROR: write username `\nsu nick <your username>`", parse_mode='MARKDOWN')
 
     if 'error' not in response:
-        osu_mode = response['playmode']
+        if osu_mode == '':
+            osu_mode = response['playmode']
     else:
         await bot.reply_to(message, "ERROR: username is not exists")
 
-    if osu_mode != None:
+    if osu_mode != '':
         with sqlite3.connect(OSU_USERS_DB) as db:
             cursor = db.cursor()
             osu_id = response['id']
