@@ -5,6 +5,7 @@ import config
 import sqlite3
 from commands.other import isempty
 from commands.osu.utils.fetch import mode as modefetch
+from commands.osu.utils.fetch import user as userdb
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -28,27 +29,21 @@ async def main(message, msgsplit, all_modes, osu_api):
         except:
             username = None
     else:
-        with sqlite3.connect(OSU_USERS_DB) as db:
-            cursor = db.cursor()
-            query = ''' SELECT tg_id, osu_username, osu_mode FROM osu_users '''
-            cursor.execute(query)
-            users = cursor.fetchall()
-            for user in users:
-                if user[0] == tgid:
-                    username = user[1]
-                    mode = user[2]
-                    break
-                else:
-                    username = None
-                    mode = None
-    
+        user = await userdb(tgid, OSU_USERS_DB)
+        if user != None:
+            username = user[4]
+            mode = user[5]
+
     mode = await modefetch(mode, msgsplit, all_modes)
-    
-    if username != None and mode != None:
+    if username != None:
         response = await osu_api.profile(username, mode)
+    else:
+        await bot.reply_to(message, 'ERROR: set your nick:\n`su nick <username>`', parse_mode="MARKDOWN")
+
+    if 'error' not in response:
         pp = response['statistics']['pp']
-        playtime = response['statistics']['play_time']//3600
-        ii = await calculate(mode, pp, playtime)
+        playtime_hours = response['statistics']['play_time']//3600
+        ii = await calculate(mode, pp, playtime_hours)
 
         text = f'''{username}'s improvement indicator\n'''
         text += f'''ii: {ii} ({mode})'''
@@ -57,17 +52,17 @@ async def main(message, msgsplit, all_modes, osu_api):
         markup.add(button1)
         await bot.reply_to(message, text, reply_markup=markup)
     else:
-        await bot.reply_to(message, 'ERROR: set your nick:\n`su nick <username>`', parse_mode="MARKDOWN")
+        await bot.reply_to(message, 'ERROR: no info, try other mode', parse_mode="MARKDOWN")
 
 async def calculate(mode, pp, playtime_hours):
     if mode == 'osu':
-        expected_playtime = -4.49 + 0.0601 * pp + 0.00000966 * pp**2
+        expected_playtime = -12 + 0.0781 * pp + 6.01e-6 * (pp**2)
     elif mode == 'mania':
-        expected_playtime = 0.227 + 0.0306 * pp + 0.00000107 * pp**2
+        expected_playtime = -0.601 + 0.0321 * pp + 7.69e-7 * (pp**2)
     elif mode == 'taiko':
-        expected_playtime = -0.159 + 0.00891 * pp + 0.00000329 * pp**2
+        expected_playtime = -1.08 + 0.0179 * pp + 1.65e-6 * (pp**2)
     elif mode == 'fruits':
-        expected_playtime = -4.63 + 0.0564 * pp + 0.00000211 * pp**2
+        expected_playtime = -4.14 + 0.0458 * pp + 2.38e-6 * (pp**2)
     ii = round(expected_playtime / playtime_hours, 2)
 
     return ii
