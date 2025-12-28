@@ -32,7 +32,6 @@ async def main(map_id, mode=None, mods=None, lazer=None, clockrate=None,
                 lazer = lazer,
                 clock_rate = clockrate,
                 accuracy = accuracy,
-                combo = combo + misses,
                 n300 = n300 + misses,
                 n100 = n100,
                 n50 = n50
@@ -58,7 +57,6 @@ async def main(map_id, mode=None, mods=None, lazer=None, clockrate=None,
                 lazer = lazer,
                 clock_rate = clockrate,
                 accuracy = accuracy,
-                combo = combo + misses,
                 n_geki = n_geki + misses,
                 n300 = n300,
                 n_katu = n_katu,
@@ -83,7 +81,6 @@ async def main(map_id, mode=None, mods=None, lazer=None, clockrate=None,
                 lazer = lazer,
                 clock_rate = clockrate,
                 accuracy = accuracy,
-                combo = combo + misses,
                 n300 = n300 + misses,
                 n100 = n100
             ).calculate(beatmap)
@@ -140,7 +137,8 @@ async def main(map_id, mode=None, mods=None, lazer=None, clockrate=None,
             "if_99": attrs_99.pp,
             "if_98": attrs_98.pp,
             "if_97": attrs_97.pp,
-            "max_combo": attrs_ss.state.max_combo
+            "max_combo": attrs_ss.state.max_combo,
+            "star_rate": attrs_ss.difficulty.stars
         }
 
         return answer
