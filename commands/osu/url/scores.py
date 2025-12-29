@@ -9,7 +9,6 @@ bot = AsyncTeleBot(config.TG_TOKEN)
 async def main(message:types.Message, msgsplit:list, osu_api:osuapi.Osu, UrlSplit:list):
     score_id:int = int(UrlSplit[4])
     score_res:dict = await osu_api.get_score(score_id)
-    print(score_res)
     if score_res != {'error': "Specified Solo\\Score couldn't be found."} :
         userid = score_res['user']['id']
         beatmapid = score_res['beatmap']['id']
@@ -26,7 +25,6 @@ async def main(message:types.Message, msgsplit:list, osu_api:osuapi.Osu, UrlSpli
         profile_res:dict = await osu_api.profile(userid, mode, use_id=True)
         beatmap_res:dict = await osu_api.beatmap(beatmapid)
 
-        print(1)
         text = await templates.main(mode, score_res, beatmap_res, profile_res, '?')
         await bot.reply_to(message, text, parse_mode='MARKDOWN', link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
     else:

@@ -102,7 +102,9 @@ async def standart(recent, beatmap, user, offset):
         recentPassedPercent = round(recentTotalHits/beatmapTotalHitObjects*100, 2)
         recentPassedPercentText = f'({recentPassedPercent}%)'
     
-    CalculatedScore = await pp_cal.main(beatmapID, 'osu', mods=recentModsRaw, lazer=True, accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, n300=int(n300), n100=int(n100), n50=int(n50), misses=int(miss))
+    CalculatedScore = await pp_cal.main(beatmapID, 'osu', mods=recentModsRaw,
+                                        accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, 
+                                        misses=int(miss), statistics=recentStatistics)
     if isinstance(recentPP, (int, float)):
         pp = round(recentPP, 2)
         pptext = str(pp)
@@ -235,7 +237,9 @@ async def mania(recent, beatmap, user, offset):
         recentPassedPercent = round(recentTotalHits/beatmapTotalHitObjects*100, 2)
         recentPassedPercentText = f'({recentPassedPercent}%)'
     
-    CalculatedScore = await pp_cal.main(beatmapID, 'mania', mods=recentModsRaw, lazer=True, accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, n_geki=int(nMax), n300=int(n300), n_katu=int(n200), n100=int(n100), n50=int(n50), misses=int(miss))
+    CalculatedScore = await pp_cal.main(beatmapID, 'mania', mods=recentModsRaw,
+                                        accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, 
+                                        misses=int(miss), statistics=recentStatistics)
     if isinstance(recentPP, (int, float)):
         pp = round(recentPP, 2)
         pptext = str(pp)
@@ -244,12 +248,14 @@ async def mania(recent, beatmap, user, offset):
         pptext = str(pp) + '(if rank)'
     pp_fc, pp_ss, pp_99, pp_98, pp_97 = round(CalculatedScore['if_fc'], 2), round(CalculatedScore['if_ss'], 2), round(CalculatedScore['if_99'], 2), round(CalculatedScore['if_98'], 2), round(CalculatedScore['if_97'], 2)
 
+    beatmapDiffNew = round(CalculatedScore["star_rate"], 2)
+
     datetime = other.time(recentPassTime)
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
     text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[mania]]\n'''
-    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | Keys:{beatmapCS} AR:{beatmapAR} OD:{beatmapOD} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
     text += f'''Score: {recentScore} | Combo: {recentMaxCombo}/{beatmapMaxCombo} | Accuracy: {recentAccuracy}%\n'''
@@ -355,7 +361,9 @@ async def taiko(recent, beatmap, user, offset):
         recentPassedPercent = round(recentTotalHits/beatmapTotalHitObjects*100, 2)
         recentPassedPercentText = f'({recentPassedPercent}%)'
     
-    CalculatedScore = await pp_cal.main(beatmapID, 'taiko', mods=recentModsRaw, lazer=True, accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, n300=int(n300), n100=int(n100), misses=int(miss))
+    CalculatedScore = await pp_cal.main(beatmapID, 'taiko', mods=recentModsRaw,
+                                        accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, 
+                                        misses=int(miss), statistics=recentStatistics)
     if isinstance(recentPP, (int, float)):
         pp = round(recentPP, 2)
         pptext = str(pp)
@@ -364,12 +372,14 @@ async def taiko(recent, beatmap, user, offset):
         pptext = str(pp) + '(if rank)'
     pp_fc, pp_ss, pp_99, pp_98, pp_97 = round(CalculatedScore['if_fc'], 2), round(CalculatedScore['if_ss'], 2), round(CalculatedScore['if_99'], 2), round(CalculatedScore['if_98'], 2), round(CalculatedScore['if_97'], 2)
 
+    beatmapDiffNew = round(CalculatedScore["star_rate"], 2)
+
     datetime = other.time(recentPassTime)
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
     text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[taiko]]\n'''
-    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | OD:{beatmapOD} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
     text += f'''Score: {recentScore} | Combo: {recentMaxCombo}/{beatmapMaxCombo} | Accuracy: {recentAccuracy}%\n'''
@@ -467,7 +477,9 @@ async def fruits(recent, beatmap, user, offset):
             case 'miss':
                 miss = value
 
-    CalculatedScore = await pp_cal.main(beatmapID, 'fruits', mods=recentModsRaw, lazer=True, accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, n300=int(n300), misses=int(miss), n100=int(large_tick_hit), n50=int(small_tick_hit), n_katu=int(small_tick_miss))
+    CalculatedScore = await pp_cal.main(beatmapID, 'fruits', mods=recentModsRaw,
+                                        accuracy=recentAccuracyRaw*100, combo=recentMaxCombo, 
+                                        misses=int(miss), statistics=recentStatistics)
     if isinstance(recentPP, (int, float)):
         pp = round(recentPP, 2)
         pptext = str(pp)
@@ -476,6 +488,8 @@ async def fruits(recent, beatmap, user, offset):
         pptext = str(pp) + '(if rank)'
     pp_fc, pp_ss, pp_99, pp_98, pp_97 = round(CalculatedScore['if_fc'], 2), round(CalculatedScore['if_ss'], 2), round(CalculatedScore['if_99'], 2), round(CalculatedScore['if_98'], 2), round(CalculatedScore['if_97'], 2)
     beatmapMaxCombo = beatmapTotalHitObjects = CalculatedScore['max_combo']
+
+    beatmapDiffNew = round(CalculatedScore["star_rate"], 2)
 
     recentPassedPercentText = ''
     if not recentPassed:
@@ -487,7 +501,7 @@ async def fruits(recent, beatmap, user, offset):
 
 
     text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[fruits]]\n'''
-    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | AR:{beatmapAR} OD:{beatmapOD} CS:{beatmapCS} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
     text += f'''Score: {recentScore} | Combo: {recentMaxCombo}/{beatmapMaxCombo} | Accuracy: {recentAccuracy}%\n'''

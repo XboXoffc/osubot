@@ -46,3 +46,25 @@ async def user(tg_id, OSU_USERS_DB):
         user = cursor.fetchone()
     
     return user
+
+async def ruleset_convert(mode: int | str):
+    if isinstance(mode, int):
+        if mode == 0:
+            mode = 'osu'
+        elif mode == 1:
+            mode = 'taiko'
+        elif mode == 2:
+            mode = 'fruits'
+        elif mode == 3:
+            mode = 'mania'
+    elif isinstance(mode, str):
+        if mode == 'osu':
+            mode = 0
+        elif mode == 'taiko':
+            mode = 1
+        elif mode == 'fruits':
+            mode = 2
+        elif mode == 'mania':
+            mode = 3
+    
+    return mode
