@@ -255,7 +255,10 @@ async def mania(recent, beatmap, user, offset):
 
 
     text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[mania]]\n'''
-    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    if beatmapMods == [] or beatmapMods == ['CL']:
+        text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    else:
+        text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''    
     text += f'''{beatmapTime} | Keys:{beatmapCS} AR:{beatmapAR} OD:{beatmapOD} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
     text += f'''Score: {recentScore} | Combo: {recentMaxCombo}/{beatmapMaxCombo} | Accuracy: {recentAccuracy}%\n'''
@@ -379,7 +382,10 @@ async def taiko(recent, beatmap, user, offset):
 
 
     text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[taiko]]\n'''
-    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    if beatmapMods == [] or beatmapMods == ['CL']:
+        text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    else:
+        text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | OD:{beatmapOD} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
     text += f'''Score: {recentScore} | Combo: {recentMaxCombo}/{beatmapMaxCombo} | Accuracy: {recentAccuracy}%\n'''
@@ -501,7 +507,10 @@ async def fruits(recent, beatmap, user, offset):
 
 
     text += f'''[{username}]({url_users}/{userid}) (Global: #{userGlobalRank}, {userCountryCode}: #{userCountryRank}) [[fruits]]\n'''
-    text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    if beatmapMods == [] or beatmapMods == ['CL']:
+        text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
+    else:
+        text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩->{beatmapDiffNew}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | AR:{beatmapAR} OD:{beatmapOD} CS:{beatmapCS} HP:{beatmapHP} {beatmapBPM}BPM {beatmapModsText}\n'''
     text += f'''\n'''
     text += f'''Score: {recentScore} | Combo: {recentMaxCombo}/{beatmapMaxCombo} | Accuracy: {recentAccuracy}%\n'''
