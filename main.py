@@ -13,7 +13,7 @@ osu_api = osuapi.Osu(config.OSU_CLIENT_ID, config.OSU_CLIENT_SECRET, config.X_AP
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'document'])
 async def messages(message):
-    other.gtm(message)
+    await other.gtm(message)
     messagetext = (message.text or message.caption).lower()
     msgsplit = messagetext.split(' ')
     
