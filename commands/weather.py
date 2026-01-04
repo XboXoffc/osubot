@@ -10,17 +10,10 @@ DB_PATH = config.WHEATHER_DB_PATH
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-def isempty(list: list or tuple, index: int):
-    try:
-        trash = list[index]
-        return False
-    except:
-        return True
-
 async def main(message):
     message_split = message.text.split(" ")
     try:
-        if not isempty(message_split, 1) and message_split[1][0] == '+':
+        if not await other.isempty(message_split, 1) and message_split[1][0] == '+':
             city = message_split[1]
             city.removeprefix('+')
             with sqlite3.connect(DB_PATH) as db:
@@ -33,7 +26,7 @@ async def main(message):
                 query1 = f'''  REPLACE INTO users_city(tg_id, tg_user, city) VALUES({message.from_user.id}, "{message.from_user.username}", "{city}") '''
                 cursor.execute(query)
                 cursor.execute(query1)
-        elif isempty(message_split, 1):
+        elif await other.isempty(message_split, 1):
             with sqlite3.connect(DB_PATH) as db:
                 cursor = db.cursor()
                 query = '''  SELECT tg_id, city FROM users_city  '''

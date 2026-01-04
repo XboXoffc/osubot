@@ -117,126 +117,6 @@ async def main(map_id, mode=None, mods=None, lazer=None, clockrate=None,
             acc = 97.0
         )
 
-        """
-        beatmap =  rosu.Beatmap(path = f"{OSU_MAP_PATH}{map_id}.osu")
-        if mode == 'osu':
-            beatmap.convert(rosu.GameMode.Osu)
-            attrs = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = accuracy,
-                combo = combo,
-                n300 = n300,
-                n100 = n100,
-                n50 = n50,
-                misses = misses
-            ).calculate(beatmap)
-
-            attrs_fc = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = accuracy,
-                n300 = n300 + misses,
-                n100 = n100,
-                n50 = n50
-            ).calculate(beatmap)
-        elif mode == 'mania':
-            beatmap.convert(rosu.GameMode.Mania)
-            attrs = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = accuracy,
-                combo = combo,
-                n_geki = n_geki,
-                n300 = n300,
-                n_katu = n_katu,
-                n100 = n100,
-                n50 = n50,
-                misses = misses
-            ).calculate(beatmap)
-
-            attrs_fc = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = accuracy,
-                n_geki = n_geki + misses,
-                n300 = n300,
-                n_katu = n_katu,
-                n100 = n100,
-                n50 = n50
-            ).calculate(beatmap)
-        elif mode == 'taiko':
-            beatmap.convert(rosu.GameMode.Taiko)
-            attrs = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = accuracy,
-                combo = combo,
-                n300 = n300,
-                n100 = n100,
-                misses = misses
-            ).calculate(beatmap)
-
-            attrs_fc = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = accuracy,
-                n300 = n300 + misses,
-                n100 = n100
-            ).calculate(beatmap)
-        elif mode == 'fruits':
-            beatmap.convert(rosu.GameMode.Catch)
-            attrs = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = accuracy,
-                combo = combo,
-                n300 = n300,
-                misses = misses
-            ).calculate(beatmap)
-            attrs_fc = rosu.Performance(
-                mods = mods,
-                lazer = lazer,
-                clock_rate = clockrate,
-                accuracy = 100
-            ).calculate(beatmap)
-
-        attrs_ss = rosu.Performance(
-            mods = mods,
-            lazer = lazer,
-            clock_rate = clockrate,
-            accuracy = 100
-        ).calculate(beatmap)
-
-        attrs_99 = rosu.Performance(
-            mods = mods,
-            lazer = lazer,
-            clock_rate = clockrate,
-            accuracy = 99
-        ).calculate(beatmap)
-
-        attrs_98 = rosu.Performance(
-            mods = mods,
-            lazer = lazer,
-            clock_rate = clockrate,
-            accuracy = 98
-        ).calculate(beatmap)
-
-        attrs_97 = rosu.Performance(
-            mods = mods,
-            lazer = lazer,
-            clock_rate = clockrate,
-            accuracy = 97
-        ).calculate(beatmap)
-        """
-
         answer = {
             "if_rank": attrs.pp,
             "if_fc": attrs_fc.pp,
@@ -247,8 +127,6 @@ async def main(map_id, mode=None, mods=None, lazer=None, clockrate=None,
             "max_combo": attrs_ss.max_combo,
             "star_rate": attrs_ss.stars
         }
-        print(answer)
-        print(attrs_fc)
 
         return answer
     

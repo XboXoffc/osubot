@@ -5,7 +5,7 @@ import config
 import requests
 import sqlite3
 from commands.osu.groups import groupdb
-from commands.other import isempty
+from commands import other
 from commands.osu.utils.fetch import mode as modefetch
 
 OSU_USERS_DB = config.OSU_USERS_DB
@@ -23,7 +23,7 @@ async def main(message, msgsplit, all_modes, osu_api):
     elif not message.reply_to_message:
         tg_id = message.from_user.id
 
-    if not isempty(msgsplit, 1) and msgsplit[1] not in all_modes:
+    if not await other.isempty(msgsplit, 1) and msgsplit[1] not in all_modes:
         username = msgsplit[1]
     else:
         with sqlite3.connect(OSU_USERS_DB) as db:

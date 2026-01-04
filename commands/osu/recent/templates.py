@@ -115,7 +115,7 @@ async def standart(recent, beatmap, user, offset):
 
     beatmapDiffNew = round(CalculatedScore["star_rate"], 2)
 
-    datetime = other.time(recentPassTime)
+    datetime = await other.time(recentPassTime)
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
@@ -250,7 +250,7 @@ async def mania(recent, beatmap, user, offset):
 
     beatmapDiffNew = round(CalculatedScore["star_rate"], 2)
 
-    datetime = other.time(recentPassTime)
+    datetime = await other.time(recentPassTime)
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
@@ -377,7 +377,7 @@ async def taiko(recent, beatmap, user, offset):
 
     beatmapDiffNew = round(CalculatedScore["star_rate"], 2)
 
-    datetime = other.time(recentPassTime)
+    datetime = await other.time(recentPassTime)
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 
@@ -502,7 +502,7 @@ async def fruits(recent, beatmap, user, offset):
         recentPassedPercent = round(recentTotalHits/beatmapTotalHitObjects*100, 2)
         recentPassedPercentText = f'({recentPassedPercent}%)'
 
-    datetime = other.time(recentPassTime)
+    datetime = await other.time(recentPassTime)
     datetime = f'''{datetime['day']}.{datetime['month']}.{datetime['year']} {datetime['hour']}:{datetime['min']}'''
 
 

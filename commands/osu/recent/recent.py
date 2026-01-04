@@ -4,7 +4,7 @@ import asyncio
 import config
 import sqlite3
 from commands.osu.recent import templates
-from commands.other import isempty
+from commands import other
 from commands.osu.utils.fetch import mode as modefetch
 
 
@@ -19,7 +19,7 @@ async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinli
     recent_res_raw = None
     beatmap_res = None
     recent_top = []
-    if not isempty(msgsplit, 1) and msgsplit[1] not in all_modes and msgsplit[1] not in allflags:
+    if not await other.isempty(msgsplit, 1) and msgsplit[1] not in all_modes and msgsplit[1] not in allflags:
         response = await osu_api.profile(msgsplit[1])
         try:
             osuid = response['id']
@@ -46,7 +46,7 @@ async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinli
         for i in ['-offset', '-off']:
             if i in msgsplit:
                 index = msgsplit.index(i) + 1
-                offset = msgsplit[index] if not isempty(msgsplit, index) else '0'
+                offset = msgsplit[index] if not await other.isempty(msgsplit, index) else '0'
     try:
         if int(offset) <= 0:
             offset = '0'

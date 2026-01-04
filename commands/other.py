@@ -1,4 +1,4 @@
-def gtm(message):
+async def gtm(message):
     if message.text:
         print('Пользователь {}, @{}, {} написал: {}'.format(message.from_user.id, message.from_user.username, message.from_user.first_name, message.text))
     elif message.photo:
@@ -8,21 +8,21 @@ def gtm(message):
     elif message.location:
         print('Пользователь {}, @{}, {} отправил локацию'.format(message.from_user.id, message.from_user.username, message.from_user.first_name))
 
-def isempty(list1: list or tuple, index: int):
+async def isempty(list1: list or tuple, index: int):
     try:
         trash = list1[index]
         return False
     except:
         return True
 
-def isint(obj):
+async def isint(obj):
     try:
         int(obj)
         return True
     except:
         return False
 
-def time(time: str):
+async def time(time: str):
     time.replace('Z', '')
     timesplit = time.split('T')
     date = timesplit[0].split('-')

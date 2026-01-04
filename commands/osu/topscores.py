@@ -6,7 +6,7 @@ from commands import other
 import sqlite3
 import math
 import time
-from commands.other import isempty
+from commands import other
 from commands.osu.utils.fetch import mode as modefetch
 
 OSU_USERS_DB = config.OSU_USERS_DB
@@ -75,7 +75,7 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
     elif not message.reply_to_message:
         tgid = message.from_user.id
 
-    if not isempty(msgsplit, 1) and msgsplit[1] not in all_modes and msgsplit[1] not in allflags:
+    if not await other.isempty(msgsplit, 1) and msgsplit[1] not in all_modes and msgsplit[1] not in allflags:
         response = await osu_api.profile(msgsplit[1])
         osuid = response['id']
         osuuser = response['username']
@@ -99,12 +99,12 @@ async def main(message, msgsplit, all_modes, osu_api, isinline=False, limit = 3,
         for i in ['-p', '-page']:
             if i in msgsplit:
                 index = msgsplit.index(i) + 1
-                page = int(msgsplit[index]) if msgsplit[index] != '$empty$' and other.isint(msgsplit[index]) else 0
+                page = int(msgsplit[index]) if msgsplit[index] != '$empty$' and await other.isint(msgsplit[index]) else 0
                 page -= 1
         for i in ['-l', '-limit']:
             if i in msgsplit:
                 index = msgsplit.index(i) + 1
-                limit = int(msgsplit[index]) if msgsplit[index] != '$empty$' and other.isint(msgsplit[index]) else 3
+                limit = int(msgsplit[index]) if msgsplit[index] != '$empty$' and await other.isint(msgsplit[index]) else 3
     
     if limit > 15:
         limit = 3
