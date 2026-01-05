@@ -6,6 +6,7 @@ from commands import other
 from commands.osu import osuapi
 from commands.osu.recent import templates
 from commands.osu.utils import fetch
+import validators
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
@@ -16,6 +17,7 @@ async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osu
     strokes:list = None
     score_id:int or str = None
     reply_state:bool = message.reply_to_message
+    osu_id:int = None
 
 
     tg_id:int = message.from_user.id
@@ -35,17 +37,43 @@ async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osu
         tg_reply_id:int = None
         tg_reply_text:str = None
 
+
     if len(msgsplit) == 0 and reply_is_recent:
-        score_id = strokes[-1].split('/')[-1]
-    elif len(msgsplit) == 1:
-        score_id = msgsplit[0]
+        score_id:int = strokes[-1].split('/')[-1]
+    elif len(msgsplit) == 1 and reply_is_recent:
+        score_id:int = strokes[-1].split('/')[-1]
+        osu_name:str = msgsplit[0]
+        profile_res = await osu_api.profile(osu_name)
+        osu_id = int(profile_res['id'])
+    elif len(msgsplit) == 1 and not reply_is_recent:
+        try:
+            if validators.url(msgsplit[0]):
+                score_id:int = int(msgsplit[0].split('/')[-1])
+            else:
+                score_id:int = int(msgsplit[0])
+        except:
+            pass
+    elif len(msgsplit) == 2 and not reply_is_recent:
+        islink = []
+        for i in range(2):
+            islink.append(validators.url(msgsplit[i]))
+        if islink[0] != islink[1]:
+            try:
+                for i in range(2):
+                    if islink[i]:
+                        score_id:int = int(msgsplit[i].split('/')[-1])
+                        msgsplit.pop(i)
+            finally:
+                osu_name:str = msgsplit[-1]
+                profile_res = await osu_api.profile(osu_name)
+                osu_id = int(profile_res['id'])
     
 
     if score_id != None and await other.isint(score_id):
         osu_data:tuple = await fetch.user(tg_id, OSU_USERS_DB)
-        if osu_data != None:
-            osu_id:int = osu_data[3]
-            osu_name:str = osu_data[4]
+        if osu_data != None or osu_id:
+            if osu_id == None:
+                osu_id:int = osu_data[3]
 
             score_res:dict = await osu_api.get_score(score_id)
             beatmapid:int = score_res['beatmap']['id']
@@ -57,9 +85,19 @@ async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osu
                 profile_res:dict = await osu_api.profile(osu_id, osu_mode, use_id=True)
 
                 text = await templates.main(osu_mode, osubeatmapscore['score'], beatmap_res, profile_res, osubeatmapscore['position'], is_current=True)
-                await bot.reply_to(message, text, parse_mode='MARKDOWN', link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
+                await bot.reply_to(
+                    message, 
+                    text, 
+                    parse_mode='MARKDOWN', 
+                    link_preview_options=types.LinkPreviewOptions(
+                        is_disabled=False, 
+                        url=beatmap_res['beatmapset']['covers']['card@2x'], 
+                        prefer_large_media=True, 
+                        show_above_text=True
+                    )
+                )
             else:
-                text = 'ERROR: your score on this beatmap not exist'
+                text = 'ERROR: your score on this beatmap not exists'
                 await bot.reply_to(message, text, parse_mode='MARKDOWN')
         else:
             text = 'ERROR: set nick in bot with `su nick`'

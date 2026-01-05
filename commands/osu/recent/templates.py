@@ -137,7 +137,7 @@ async def standart(recent, beatmap, user, offset, is_current:bool):
     text += f'''{datetime}\n'''
     text += f'''\n'''
     if is_current:
-        text += f'''Your rank in map: {offset} \n'''
+        text += f'''Rank in map: {offset} \n'''
     else:
         text += f'''offset: {offset} \n'''
     text += f'''Score url: {url_scores}/{recentID}'''
@@ -276,7 +276,7 @@ async def mania(recent, beatmap, user, offset, is_current:bool):
     text += f'''{datetime}\n'''
     text += f'''\n'''
     if is_current:
-        text += f'''Your rank in map: {offset} \n'''
+        text += f'''Rank in map: {offset} \n'''
     else:
         text += f'''offset: {offset} \n'''
     text += f'''Score url: {url_scores}/{recentID}'''
@@ -407,7 +407,7 @@ async def taiko(recent, beatmap, user, offset, is_current:bool):
     text += f'''{datetime}\n'''
     text += f'''\n'''
     if is_current:
-        text += f'''Your rank in map: {offset} \n'''
+        text += f'''Rank in map: {offset} \n'''
     else:
         text += f'''offset: {offset} \n'''
     text += f'''Score url: {url_scores}/{recentID}'''
@@ -533,7 +533,7 @@ async def fruits(recent, beatmap, user, offset, is_current:bool):
     text += f'''{datetime}\n'''
     text += f'''\n'''
     if is_current:
-        text += f'''Your rank in map: {offset} \n'''
+        text += f'''Rank in map: {offset} \n'''
     else:
         text += f'''offset: {offset} \n'''
     text += f'''Score url: {url_scores}/{recentID}'''
