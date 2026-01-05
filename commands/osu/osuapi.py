@@ -67,3 +67,10 @@ class Osu:
         return await self.__get(f'beatmaps/{beatmap_id}')
     async def get_score(self, score_id=''):
         return await self.__get(f'scores/{score_id}')
+    async def get_user_beatmap_score(self, user:int, beatmapset_id:int, legacy_only:int = '', mode:str = '', mods:str = ''):
+        params = {
+            "legacy_only": legacy_only,
+            "mode": mode,
+            "mods": mods
+        }
+        return await self.__get(f'beatmaps/{beatmapset_id}/scores/users/{user}', params)

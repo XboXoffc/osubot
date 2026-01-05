@@ -1,7 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import config
-from commands.osu import osuapi, osuhelp, botinit, ii, nick, avatar, profile, skin, topscores
+from commands.osu import osuapi, osuhelp, botinit, ii, nick, avatar, profile, skin, topscores, current
 from commands.osu.recent import recent
 from commands.osu.groups import grouptop, update
 from commands.osu.compare import compare
@@ -53,10 +53,14 @@ async def main(message, osu_api):
     ###  ii
     elif flag in ['ii', 'шш']:
         await ii.main(message, msgsplit, all_modes, osu_api)
-    ### compare
+    ###  compare
     elif flag in ['compare', 'com', 'сщьзфку', 'сщь']:
         msgsplit.pop(0)
         await compare.main(message, msgsplit, all_modes, osu_api)
+    ###  current
+    elif flag in ['current', 'cur', 'u', 'сгккуте', 'сгк', 'г']:
+        msgsplit.pop(0)
+        await current.main(message, msgsplit, all_modes, osu_api)
     ###  init
     elif flag in ['init']:
         await botinit.main(message)

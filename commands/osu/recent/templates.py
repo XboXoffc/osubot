@@ -1,17 +1,17 @@
 from commands import other
 from commands.osu.calculator import pp as pp_cal
 
-async def main(types, recent, beatmap, user, offset):
+async def main(types, recent, beatmap, user, offset, is_current:bool = False):
     if types == 'osu':
-        return await standart(recent, beatmap, user, offset)
+        return await standart(recent, beatmap, user, offset, is_current)
     elif types == 'mania':
-        return await mania(recent, beatmap, user, offset)
+        return await mania(recent, beatmap, user, offset, is_current)
     elif types == 'taiko':
-        return await taiko(recent, beatmap, user, offset)
+        return await taiko(recent, beatmap, user, offset, is_current)
     elif types == 'fruits':
-        return await fruits(recent, beatmap, user, offset)
+        return await fruits(recent, beatmap, user, offset, is_current)
 
-async def standart(recent, beatmap, user, offset):
+async def standart(recent, beatmap, user, offset, is_current:bool):
     text = ''
     url_base = 'https://osu.ppy.sh'
     url_users = url_base + '/users'
@@ -136,7 +136,11 @@ async def standart(recent, beatmap, user, offset):
     text += f'''Rank: {recentRank} {recentPassedPercentText}\n'''
     text += f'''{datetime}\n'''
     text += f'''\n'''
-    text += f'''offset: {offset} \nScore url: {url_scores}/{recentID}'''
+    if is_current:
+        text += f'''Your rank in map: {offset} \n'''
+    else:
+        text += f'''offset: {offset} \n'''
+    text += f'''Score url: {url_scores}/{recentID}'''
 
     return text
 
@@ -144,7 +148,7 @@ async def standart(recent, beatmap, user, offset):
 
 
 
-async def mania(recent, beatmap, user, offset):
+async def mania(recent, beatmap, user, offset, is_current:bool):
     text = ''
     url_base = 'https://osu.ppy.sh'
     url_users = url_base + '/users'
@@ -271,7 +275,11 @@ async def mania(recent, beatmap, user, offset):
     text += f'''Rank: {recentRank} {recentPassedPercentText}\n'''
     text += f'''{datetime}\n'''
     text += f'''\n'''
-    text += f'''offset: {offset} \nScore url: {url_scores}/{recentID}'''
+    if is_current:
+        text += f'''Your rank in map: {offset} \n'''
+    else:
+        text += f'''offset: {offset} \n'''
+    text += f'''Score url: {url_scores}/{recentID}'''
 
     return text
 
@@ -279,7 +287,7 @@ async def mania(recent, beatmap, user, offset):
 
 
 
-async def taiko(recent, beatmap, user, offset):
+async def taiko(recent, beatmap, user, offset, is_current:bool):
     text = ''
     url_base = 'https://osu.ppy.sh'
     url_users = url_base + '/users'
@@ -398,7 +406,11 @@ async def taiko(recent, beatmap, user, offset):
     text += f'''Rank: {recentRank} {recentPassedPercentText}\n'''
     text += f'''{datetime}\n'''
     text += f'''\n'''
-    text += f'''offset: {offset} \nScore url: {url_scores}/{recentID}'''
+    if is_current:
+        text += f'''Your rank in map: {offset} \n'''
+    else:
+        text += f'''offset: {offset} \n'''
+    text += f'''Score url: {url_scores}/{recentID}'''
 
     return text
 
@@ -406,7 +418,7 @@ async def taiko(recent, beatmap, user, offset):
 
 
 
-async def fruits(recent, beatmap, user, offset):
+async def fruits(recent, beatmap, user, offset, is_current:bool):
     text = ''
     url_base = 'https://osu.ppy.sh'
     url_users = url_base + '/users'
@@ -520,6 +532,10 @@ async def fruits(recent, beatmap, user, offset):
     text += f'''Rank: {recentRank} {recentPassedPercentText}\n'''
     text += f'''{datetime}\n'''
     text += f'''\n'''
-    text += f'''offset: {offset} \nScore url: {url_scores}/{recentID}'''
+    if is_current:
+        text += f'''Your rank in map: {offset} \n'''
+    else:
+        text += f'''offset: {offset} \n'''
+    text += f'''Score url: {url_scores}/{recentID}'''
 
     return text
