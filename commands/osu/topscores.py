@@ -59,7 +59,7 @@ async def template(message, res_scores, offset, limit, osumode, osu_api):
                     miss = str(value)
         text += f'''*300*: {great}  *100*: {ok}  *50*: {meh}  *Miss*:{miss}\n'''
 
-        datetime = other.time(res_scores[i]['ended_at'])
+        datetime = await other.time(res_scores[i]['ended_at'])
         datetime = datetime['day'] + '.' + datetime['month'] + '.' + datetime['year'] + ' ' + datetime['hour'] + ':' + datetime['min']
         text += f'''{datetime}\n\n'''
 
