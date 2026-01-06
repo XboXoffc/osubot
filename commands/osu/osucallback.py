@@ -1,9 +1,10 @@
 from telebot.async_telebot import AsyncTeleBot
+from telebot import types
 import asyncio
 import config
 import requests
 import sqlite3
-from commands.osu import init, topscores
+from commands.osu import init, topscores, current, osuapi
 from commands.osu.recent import recent
 
 OSU_USERS_DB = config.OSU_USERS_DB
@@ -13,7 +14,7 @@ bot = AsyncTeleBot(TOKEN)
 
 all_modes = init.all_modes
 
-async def main(call, osu_api):
+async def main(call:types.CallbackQuery, osu_api:osuapi.Osu):
     datasplit = call.data.split('@')
     if datasplit[0] in ['osu_skin_view']:
         issend = False
@@ -64,6 +65,12 @@ async def main(call, osu_api):
         msgsplit.pop(0)
         
         await topscores.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, isinline=True, limit=limit, page=page, botcall=call, osuid=datasplit[3], osumode=datasplit[4])
+
+    elif datasplit[0] in ['osu_recent_current'] and call.message.reply_to_message:
+        score_id:int = datasplit[1]
+        tg_id = call.from_user.id
+        await current.main(message=call.message.reply_to_message, osu_api=osu_api, score_id=score_id, tg_id=tg_id, isinline=True)
+
     
     elif datasplit[0] in ['osu_del']:
         await bot.delete_message(call.message.chat.id, call.message.id)

@@ -12,62 +12,61 @@ OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osuapi.Osu):
+async def main(message:types.Message = None, msgsplit:list = None, all_modes:list = None, osu_api:osuapi.Osu = None, isinline:bool = False, score_id:int or str = None, tg_id:int = None):
     reply_is_recent:bool = False
     strokes:list = None
-    score_id:int or str = None
     reply_state:bool = message.reply_to_message
     osu_id:int = None
 
-
-    tg_id:int = message.from_user.id
-    if reply_state:
-        tg_reply_username:str = message.reply_to_message.from_user.username
-        tg_reply_id:int = message.reply_to_message.from_user.id
-        tg_reply_text:str = message.reply_to_message.text
-        if tg_reply_text == None:
-            tg_reply_text = message.reply_to_message.caption
-
-
-        strokes = tg_reply_text.split('\n')
-        if 'https://osu.ppy.sh/scores' in strokes[-1]:
-            reply_is_recent = True
-    else:
-        tg_reply_username:str = None
-        tg_reply_id:int = None
-        tg_reply_text:str = None
+    if not isinline:
+        tg_id:int = message.from_user.id
+        if reply_state:
+            tg_reply_username:str = message.reply_to_message.from_user.username
+            tg_reply_id:int = message.reply_to_message.from_user.id
+            tg_reply_text:str = message.reply_to_message.text
+            if tg_reply_text == None:
+                tg_reply_text = message.reply_to_message.caption
 
 
-    if len(msgsplit) == 0 and reply_is_recent:
-        score_id:int = strokes[-1].split('/')[-1]
-    elif len(msgsplit) == 1 and reply_is_recent:
-        score_id:int = strokes[-1].split('/')[-1]
-        osu_name:str = msgsplit[0]
-        profile_res = await osu_api.profile(osu_name)
-        osu_id = int(profile_res['id'])
-    elif len(msgsplit) == 1 and not reply_is_recent:
-        try:
-            if validators.url(msgsplit[0]):
-                score_id:int = int(msgsplit[0].split('/')[-1])
-            else:
-                score_id:int = int(msgsplit[0])
-        except:
-            pass
-    elif len(msgsplit) == 2 and not reply_is_recent:
-        islink = []
-        for i in range(2):
-            islink.append(validators.url(msgsplit[i]))
-        if islink[0] != islink[1]:
+            strokes = tg_reply_text.split('\n')
+            if 'https://osu.ppy.sh/scores' in strokes[-1]:
+                reply_is_recent = True
+        else:
+            tg_reply_username:str = None
+            tg_reply_id:int = None
+            tg_reply_text:str = None
+
+
+        if len(msgsplit) == 0 and reply_is_recent:
+            score_id:int = strokes[-1].split('/')[-1]
+        elif len(msgsplit) == 1 and reply_is_recent:
+            score_id:int = strokes[-1].split('/')[-1]
+            osu_name:str = msgsplit[0]
+            profile_res = await osu_api.profile(osu_name)
+            osu_id = int(profile_res['id'])
+        elif len(msgsplit) == 1 and not reply_is_recent:
             try:
-                for i in range(2):
-                    if islink[i]:
-                        score_id:int = int(msgsplit[i].split('/')[-1])
-                        msgsplit.pop(i)
-            finally:
-                osu_name:str = msgsplit[-1]
-                profile_res = await osu_api.profile(osu_name)
-                osu_id = int(profile_res['id'])
-    
+                if validators.url(msgsplit[0]):
+                    score_id:int = int(msgsplit[0].split('/')[-1])
+                else:
+                    score_id:int = int(msgsplit[0])
+            except:
+                pass
+        elif len(msgsplit) == 2 and not reply_is_recent:
+            islink = []
+            for i in range(2):
+                islink.append(validators.url(msgsplit[i]))
+            if islink[0] != islink[1]:
+                try:
+                    for i in range(2):
+                        if islink[i]:
+                            score_id:int = int(msgsplit[i].split('/')[-1])
+                            msgsplit.pop(i)
+                finally:
+                    osu_name:str = msgsplit[-1]
+                    profile_res = await osu_api.profile(osu_name)
+                    osu_id = int(profile_res['id'])
+        
 
     if score_id != None and await other.isint(score_id):
         osu_data:tuple = await fetch.user(tg_id, OSU_USERS_DB)

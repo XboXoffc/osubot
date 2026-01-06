@@ -6,13 +6,14 @@ import sqlite3
 from commands.osu.recent import templates
 from commands import other
 from commands.osu.utils.fetch import mode as modefetch
+from commands.osu import osuapi
 
 
 OSU_USERS_DB = config.OSU_USERS_DB
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
 
-async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinline=False, botcall=None, osuid=None, osumode=None):
+async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osuapi.Osu, mode:str, offset:str or int = '0', isinline:bool = False, botcall=None, osuid:str or int=None, osumode:str=None):
     allflags = ['-offset', '-off']
     user_res = None
     recent_res = None
@@ -89,8 +90,10 @@ async def main(message, msgsplit, all_modes, osu_api, mode, offset = '0', isinli
     if recent_res != None:
         text = await templates.main(osumode, recent_res, beatmap_res, user_res, offset)
 
+        buttonCurrent = types.InlineKeyboardButton('My score on beatmap', callback_data=f'osu_recent_current@{recent_res['id']}')
         markup.add(buttonPage)
         markup.add(buttonNext, buttonUpdate, buttonPrev)
+        markup.add(buttonCurrent)
         if isinline:
             try:
                 await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))
