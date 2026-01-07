@@ -90,10 +90,13 @@ async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osu
     if recent_res != None:
         text = await templates.main(osumode, recent_res, beatmap_res, user_res, offset)
 
-        buttonCurrent = types.InlineKeyboardButton('My score on beatmap', callback_data=f'osu_recent_current@{recent_res['id']}')
         markup.add(buttonPage)
         markup.add(buttonNext, buttonUpdate, buttonPrev)
+        buttonCurrent = types.InlineKeyboardButton('My score on beatmap', callback_data=f'''osu_recent_current@{recent_res['id']}''')
         markup.add(buttonCurrent)
+        if message.chat.type in ['group', 'supergroup']:
+            buttonChatCurrent = types.InlineKeyboardButton('Chat scores on beatmap', callback_data=f'''osu_chat_current@{recent_res['beatmap']['id']}@{osumode}''')
+            markup.add(buttonChatCurrent)
         if isinline:
             try:
                 await bot.edit_message_text(text, botcall.message.chat.id, botcall.message.id, parse_mode='MARKDOWN', reply_markup=markup, link_preview_options=types.LinkPreviewOptions(False, beatmap_res['beatmapset']['covers']['card@2x'], prefer_large_media=True, show_above_text=True))

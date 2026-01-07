@@ -1,7 +1,6 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 import config
-import sqlite3
 from commands import other
 from commands.osu import osuapi
 from commands.osu.recent import templates

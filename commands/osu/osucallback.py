@@ -6,6 +6,7 @@ import requests
 import sqlite3
 from commands.osu import init, topscores, current, osuapi
 from commands.osu.recent import recent
+from commands.osu.groups import chatcurrent
 
 OSU_USERS_DB = config.OSU_USERS_DB
 OSU_SKIN_PATH = config.OSU_SKIN_PATH
@@ -70,6 +71,11 @@ async def main(call:types.CallbackQuery, osu_api:osuapi.Osu):
         score_id:int = datasplit[1]
         tg_id = call.from_user.id
         await current.main(message=call.message.reply_to_message, osu_api=osu_api, score_id=score_id, tg_id=tg_id, isinline=True)
+
+    elif datasplit[0] in ['osu_chat_current']:
+        beatmap_id:int = datasplit[1]
+        osumode:str = datasplit[2]
+        await chatcurrent.main(osu_api, beatmap_id, call, osumode)
 
     
     elif datasplit[0] in ['osu_del']:
