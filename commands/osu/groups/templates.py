@@ -20,8 +20,11 @@ async def grouptop(message, MembersTop, limit, osu_mode, sortby):
         avg_topscore.append(osu_topscore)
         avg_ii.append(osu_ii)
 
-
-        text += f'''#{i+1} [{osu_username}](https://t.me/{tg_username}) {osu_pp}pp | #{osu_rank} |'''
+        if tg_username != 'None':
+            tg_url = f'''https://t.me/{tg_username}'''
+        else:
+            tg_url = f'''tg://openmessage?user_id={tg_id}'''
+        text += f'''#{i+1} [{osu_username}]({tg_url}) {osu_pp}pp | #{osu_rank} |'''
         text += f''' {osu_acc}% | {osu_playcount} plays | {osu_topscore}↑pp | {osu_ii} ii\n'''
 
     if len(MembersTop) > limit:

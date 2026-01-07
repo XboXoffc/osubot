@@ -26,13 +26,15 @@ async def main(osu_api:osuapi.Osu, beatmap_id:int, botcall:types.CallbackQuery, 
         osu_id = user[2]
         osu_username = user[3]
 
-        score_res = await osu_api.get_user_beatmap_score(osu_id, beatmap_id, mode = osumode)
+        score_res:dict = await osu_api.get_user_beatmap_score(osu_id, beatmap_id, mode = osumode)
         if not ('error' in score_res):
-            data.append({'tg_id': tg_id, 'tg_username': tg_username, 'score':score_res})
+            score_res.setdefault('tg_id', tg_id)
+            score_res.setdefault('tg_username', tg_username)
+            data.append(score_res)
 
     scores_index:list[int] = []
     for i in range(len(data)):
-        scores_index.append(data[i]['score']['score']['total_score'])
+        scores_index.append(data[i]['score']['total_score'])
 
     top_scores:list[dict] = []
     for i in range(len(data)):
@@ -79,31 +81,36 @@ async def main(osu_api:osuapi.Osu, beatmap_id:int, botcall:types.CallbackQuery, 
     text += f'''[{beatmapsetArtist} - {beatmapsetTitle}]({beatmapURL}) [[{beatmapVER}, {beatmapDiff}✩]] by [{beatmapsetAuthor}] <{beatmapStatus}>\n'''
     text += f'''{beatmapTime} | AR:{beatmapAR} OD:{beatmapOD} CS:{beatmapCS} HP:{beatmapHP} {beatmapBPM}BPM \n\n'''
 
-    if len(top_scores) == 0:
-        text += 'No scores'
-    else:
+    if len(top_scores) != 0:
         for i in range(len(top_scores)):
             place = i+1
-            username = top_scores[i]['score']['score']['user']['username']
-            score = top_scores[i]['score']['score']['total_score']
-            combo = top_scores[i]['score']['score']['max_combo']
-            acc = round(top_scores[i]['score']['score']['accuracy']*100, 2)
-            pp = round(top_scores[i]['score']['score']['pp'], 2)
-            position = top_scores[i]['score']['position']
-            date = await other.time(top_scores[i]['score']['score']['ended_at'])
+            username = top_scores[i]['score']['user']['username']
+            score = top_scores[i]['score']['total_score']
+            combo = top_scores[i]['score']['max_combo']
+            acc = round(top_scores[i]['score']['accuracy']*100, 2)
+            pp = round(top_scores[i]['score']['pp'], 2)
+            position = top_scores[i]['position']
+            date = await other.time(top_scores[i]['score']['ended_at'])
             date = f'''{date['day']}.{date['month']}.{date['year']}'''
-            
 
             mods = []
-            recentModsRaw = top_scores[i]['score']['score']['mods']
-            for i in range(len(recentModsRaw)):
-                mods.append(recentModsRaw[i]['acronym'])
+            recentModsRaw = top_scores[i]['score']['mods']
+            for j in range(len(recentModsRaw)):
+                mods.append(recentModsRaw[j]['acronym'])
             if mods != []:
                 mods_text = f'+{''.join(mods)}'
             else:
                 mods_text = ''
+            
+            if top_scores[i]['tg_username'] != 'None':
+                tg_url = f'''https://t.me/{top_scores[i]['tg_username']}'''
+            else:
+                tg_url = f'''tg://openmessage?user_id={top_scores[i]['tg_id']}'''
 
-            text += f'''   #{place} {username} | {score} | {combo}/{max_combo}x | {acc}% | {pp}pp {mods_text} | #{position} | {date}\n'''
+            text += f'''   #{place} [{username}]({tg_url}) | {score} | {combo}/{max_combo}x | {acc}% | {pp}pp {mods_text} | #{position} | {date}\n'''
+    else:
+        text += 'No scores'
+    
 
     await bot.send_message(botcall.message.chat.id, text, parse_mode="MARKDOWN", link_preview_options=types.LinkPreviewOptions(is_disabled=True))
 
