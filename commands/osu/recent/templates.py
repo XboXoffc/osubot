@@ -51,7 +51,15 @@ async def standart(recent, beatmap, user, offset, is_current:bool):
     recentRankRaw = recent['rank']
     recentPassed = recent['passed']
     recentPassTime = recent['ended_at']
-    recentTotalHits = recent["maximum_statistics"]["great"]
+    try: recent300 = recentStatistics['great']
+    except: recent300 = 0
+    try: recent100 = recentStatistics['ok']
+    except: recent100 = 0
+    try: recent50 = recentStatistics['meh']
+    except: recent50 = 0
+    try: recentMiss = recentStatistics['miss']
+    except: recentMiss = 0
+    recentTotalHits = recent300 + recent100 + recent50 + recentMiss
 
     recentRank = 'F'
     if recentPassed:
