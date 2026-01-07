@@ -37,6 +37,7 @@ async def main(osu_api:osuapi.Osu, beatmap_id:int, botcall:types.CallbackQuery, 
     top_scores:list[dict] = []
     for i in range(len(data)):
         top_scores.append(data[scores_index.index(max(scores_index))])
+        scores_index[scores_index.index(max(scores_index))] = -1
 
     if botcall.from_user.username != None:
         text:str = f'''@{botcall.from_user.username},\n'''
@@ -102,7 +103,7 @@ async def main(osu_api:osuapi.Osu, beatmap_id:int, botcall:types.CallbackQuery, 
             else:
                 mods_text = ''
 
-            text += f'''   #{place} {username} | {score} | {combo}/{max_combo}x | {acc}% | {pp}pp {mods_text} | #{position} | {date}'''
+            text += f'''   #{place} {username} | {score} | {combo}/{max_combo}x | {acc}% | {pp}pp {mods_text} | #{position} | {date}\n'''
 
     await bot.send_message(botcall.message.chat.id, text, parse_mode="MARKDOWN", link_preview_options=types.LinkPreviewOptions(is_disabled=True))
 
