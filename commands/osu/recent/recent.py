@@ -92,7 +92,7 @@ async def main(message:types.Message, msgsplit:list, all_modes:list, osu_api:osu
 
         markup.add(buttonPage)
         markup.add(buttonNext, buttonUpdate, buttonPrev)
-        buttonCurrent = types.InlineKeyboardButton('My score on beatmap', callback_data=f'''osu_recent_current@{recent_res['id']}''')
+        buttonCurrent = types.InlineKeyboardButton('My score on beatmap', callback_data=f'''osu_recent_current@{recent_res['beatmap']['id']}''')
         markup.add(buttonCurrent)
         if message.chat.type in ['group', 'supergroup']:
             buttonChatCurrent = types.InlineKeyboardButton('Chat scores on beatmap', callback_data=f'''osu_chat_current@{recent_res['beatmap']['id']}@{osumode}''')

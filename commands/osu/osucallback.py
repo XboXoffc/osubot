@@ -68,9 +68,9 @@ async def main(call:types.CallbackQuery, osu_api:osuapi.Osu):
         await topscores.main(call.message.reply_to_message, msgsplit, all_modes, osu_api, isinline=True, limit=limit, page=page, botcall=call, osuid=datasplit[3], osumode=datasplit[4])
 
     elif datasplit[0] in ['osu_recent_current'] and call.message.reply_to_message:
-        score_id:int = datasplit[1]
+        beatmap_id:int = datasplit[1]
         tg_id = call.from_user.id
-        await current.main(message=call.message.reply_to_message, osu_api=osu_api, score_id=score_id, tg_id=tg_id, isinline=True)
+        await current.main(message=call.message.reply_to_message, osu_api=osu_api, beatmap_id=beatmap_id, tg_id=tg_id, isinline=True, botcall=call)
 
     elif datasplit[0] in ['osu_chat_current']:
         beatmap_id:int = datasplit[1]
