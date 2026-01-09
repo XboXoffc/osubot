@@ -88,7 +88,8 @@ async def main(osu_api:osuapi.Osu, beatmap_id:int, botcall:types.CallbackQuery, 
             score = top_scores[i]['score']['total_score']
             combo = top_scores[i]['score']['max_combo']
             acc = round(top_scores[i]['score']['accuracy']*100, 2)
-            pp = round(top_scores[i]['score']['pp'], 2)
+            try: pp = round(top_scores[i]['score']['pp'], 2) 
+            except: pp = 0
             position = top_scores[i]['position']
             date = await other.time(top_scores[i]['score']['ended_at'])
             date = f'''{date['day']}.{date['month']}.{date['year']}'''
