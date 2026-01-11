@@ -85,9 +85,18 @@ async def main(message:types.Message = None, msgsplit:list = None, all_modes:lis
             profile_res:dict = await osu_api.profile(osu_id, osu_mode, use_id=True)
 
             text += await templates.main(osu_mode, osubeatmapscore['score'], beatmap_res, profile_res, osubeatmapscore['position'], is_current=True)
+
             success = True
             if isinline: reply_to_message_id = botcall.message.id
             else: reply_to_message_id = message.id
+
+            markup = types.InlineKeyboardMarkup()
+            buttonCurrent = types.InlineKeyboardButton('My score on beatmap', callback_data=f'''osu_recent_current@{beatmap_id}''')
+            markup.add(buttonCurrent)
+            if message.chat.type in ['group', 'supergroup']:
+                buttonChatCurrent = types.InlineKeyboardButton('Chat scores on beatmap', callback_data=f'''osu_chat_current@{beatmap_id}@{osu_mode}''')
+                markup.add(buttonChatCurrent)
+
             await bot.send_message(
                 message.chat.id, 
                 text, 
@@ -98,7 +107,8 @@ async def main(message:types.Message = None, msgsplit:list = None, all_modes:lis
                     url=beatmap_res['beatmapset']['covers']['card@2x'], 
                     prefer_large_media=True, 
                     show_above_text=True
-                )
+                ),
+                reply_markup=markup
             )
         else:
             text += 'ERROR: your score on this beatmap not exists'
