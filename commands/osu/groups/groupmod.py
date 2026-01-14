@@ -22,7 +22,7 @@ async def main(message:types.Message, msgsplit:list):
         if mode in ['delete', 'del', 'вуд']:
             if len(args) > 0:
                 tg_id:int = args[0]
-                text = await groupdb.main(mode, tg_chat_id, tg_id)
+                text = await groupdb.main('delete', tg_chat_id, tg_id)
                 await bot.reply_to(message, text)
             else:
                 await bot.reply_to(message, 'ERROR: no args')
