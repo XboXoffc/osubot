@@ -6,6 +6,7 @@ import validators
 from commands import start, info, support, weather, other
 from commands.osu import init, osucallback, osuapi
 from commands.osu.url import url_handler
+from commands.osu.groups import groupmod
 
 TOKEN = config.TG_TOKEN
 bot = AsyncTeleBot(TOKEN)
@@ -38,6 +39,9 @@ async def messages(message):
     #Osu!
     elif msgsplit[0] in ['/osu' ,'o' ,'su' , 'osu', 'щ', 'ыг']:
         await init.main(message, osu_api)
+    #group moderating
+    elif msgsplit[0] in ['/group', 'group', 'gm', 'пь'] and message.chat.type in ['group', 'supergroup']:
+        await groupmod.main(message, msgsplit)
     #For urls
     elif validators.url(msgsplit[0]):
         await url_handler.main(message, msgsplit, osu_api)

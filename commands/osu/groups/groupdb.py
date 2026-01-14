@@ -3,7 +3,7 @@ import sqlite3
 
 OSU_GROUPS_DB = config.OSU_GROUPS_DB
 
-async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None, osu_username=None, osu_mode=None, osu_pp=None, osu_rank=None, osu_acc=None, osu_playcount=None, osu_topscore=None, osu_ii=None):
+async def main(mode, tg_chat_id:int or str=None, tg_id=None, tg_username=None, osu_id=None, osu_username=None, osu_mode=None, osu_pp=None, osu_rank=None, osu_acc=None, osu_playcount=None, osu_topscore=None, osu_ii=None):
     tg_chat_id = str(tg_chat_id)
     tg_chat_id = tg_chat_id.replace('-', '')
     table_name = "ID" + tg_chat_id
@@ -76,6 +76,23 @@ async def main(mode, tg_chat_id=None, tg_id=None, tg_username=None, osu_id=None,
                 old_db.append(0)
 
         return old_db
+
+    elif mode in ['delete', 'del']:
+        there_is_user = False
+        with sqlite3.connect(OSU_GROUPS_DB) as db:
+            cursor = db.cursor()
+            query = f''' SELECT tg_id FROM {table_name} WHERE tg_id={tg_id} '''
+            cursor.execute(query)
+            if cursor.fetchone() != None:
+                there_is_user = True
+            
+            if there_is_user:
+                query = f''' DELETE FROM {table_name} WHERE tg_id={tg_id} '''
+                cursor.execute(query)
+                return f'Success: user {tg_id} deleted from group db'
+            else:
+                return 'ERROR: there is no user'
+
 
 
 
