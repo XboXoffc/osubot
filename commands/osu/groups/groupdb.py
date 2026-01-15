@@ -86,10 +86,9 @@ async def main(mode, tg_chat_id:int or str=None, tg_id=None, tg_username=None, o
             if data != None:
                 tg_username = data[0]
                 osu_username = data[1]
-                if there_is_user:
-                    query = f''' DELETE FROM {table_name} WHERE tg_id={tg_id} '''
-                    cursor.execute(query)
-                    return f'Success: user {osu_username}({tg_username}, {tg_id}) deleted from group db'
+                query = f''' DELETE FROM {table_name} WHERE tg_id={tg_id} '''
+                cursor.execute(query)
+                return f'Success: user {osu_username}({tg_username}, {tg_id}) deleted from group db'
             else:
                 return 'ERROR: there is no user'
 
