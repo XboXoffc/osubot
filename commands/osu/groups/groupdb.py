@@ -78,18 +78,18 @@ async def main(mode, tg_chat_id:int or str=None, tg_id=None, tg_username=None, o
         return old_db
 
     elif mode in ['delete', 'del']:
-        there_is_user = False
         with sqlite3.connect(OSU_GROUPS_DB) as db:
             cursor = db.cursor()
-            query = f''' SELECT tg_id FROM {table_name} WHERE tg_id={tg_id} '''
+            query = f''' SELECT tg_username, osu_username FROM {table_name} WHERE tg_id={tg_id} '''
             cursor.execute(query)
-            if cursor.fetchone() != None:
-                there_is_user = True
-            
-            if there_is_user:
-                query = f''' DELETE FROM {table_name} WHERE tg_id={tg_id} '''
-                cursor.execute(query)
-                return f'Success: user {tg_id} deleted from group db'
+            data = cursor.fetchone()
+            if data != None:
+                tg_username = data[0]
+                osu_username = data[1]
+                if there_is_user:
+                    query = f''' DELETE FROM {table_name} WHERE tg_id={tg_id} '''
+                    cursor.execute(query)
+                    return f'Success: user {osu_username}({tg_username}, {tg_id}) deleted from group db'
             else:
                 return 'ERROR: there is no user'
 
