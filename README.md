@@ -17,13 +17,13 @@ general commands: https://telegra.ph/osubot-by-xbox-in-tgXboXoffcBot-01-05
 ## Screenshots 
 Some commands examples:
 
-<img width="635" height="702" alt="image" src="https://github.com/user-attachments/assets/984a6569-804a-4080-8a12-e26219b39c99" />
+<img height="400" alt="image" src="https://github.com/user-attachments/assets/984a6569-804a-4080-8a12-e26219b39c99" />
 
 skin didn't sent, cuz on server vpn is off
 
 
-<img width="631" height="786" alt="image" src="https://github.com/user-attachments/assets/18a92f9f-3026-429d-8b66-229329dc58b8" />
+<img height="400" alt="image" src="https://github.com/user-attachments/assets/18a92f9f-3026-429d-8b66-229329dc58b8" />
 
 
-<img width="590" height="681" alt="image" src="https://github.com/user-attachments/assets/b754452a-1621-46e9-8e51-c039d07dc9f4" />
+<img height="400" alt="image" src="https://github.com/user-attachments/assets/b754452a-1621-46e9-8e51-c039d07dc9f4" />
 
